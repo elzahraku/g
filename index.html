@@ -25,6 +25,9 @@ h1.store-title{font-size:clamp(2.2rem,8vw,4.5rem);font-weight:800;line-height:1.
 .admin-badge.show{display:inline-flex;}
 .logout-btn{background:none;border:1px solid rgba(255,80,80,.3);color:#ff6b6b;font-size:.75rem;font-weight:700;padding:4px 10px;border-radius:6px;cursor:pointer;font-family:'Space Mono',monospace;transition:all .2s;}
 .logout-btn:hover{background:rgba(255,80,80,.15);}
+.settings-btn{display:none;align-items:center;gap:7px;background:rgba(124,58,237,.12);border:1px solid rgba(124,58,237,.3);color:#a78bfa;font-size:.8rem;font-weight:700;padding:10px 16px;border-radius:12px;cursor:pointer;font-family:'Space Mono',monospace;letter-spacing:1px;transition:all .2s;}
+.settings-btn:hover{background:rgba(124,58,237,.25);}
+body.admin-mode .settings-btn{display:inline-flex;}
 .music-bar{position:relative;z-index:10;display:flex;align-items:center;gap:12px;max-width:720px;margin:0 auto 32px;padding:12px 18px;background:var(--surface);border:1px solid var(--border);border-radius:16px;animation:fadeUp .6s .25s ease both;}
 .music-eq{display:flex;align-items:flex-end;gap:2px;width:20px;height:18px;flex-shrink:0;}
 .music-eq span{width:3px;border-radius:2px;background:linear-gradient(to top,var(--accent),var(--accent2));}
@@ -128,6 +131,7 @@ body.admin-mode .add-card{display:flex;}
 .fg input:focus,.fg textarea:focus,.fg select:focus{border-color:var(--accent);}
 .fg textarea{resize:vertical;min-height:75px;}
 .fg select option{background:var(--surface2);}
+.fg .hint{font-size:.72rem;color:var(--muted);margin-top:5px;font-family:'Space Mono',monospace;}
 .frow{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 .btn-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px;}
 .submit-btn{width:100%;background:linear-gradient(135deg,#7c3aed,#5b21b6);color:#fff;border:none;font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;padding:13px;border-radius:10px;cursor:pointer;transition:box-shadow .2s,transform .2s;box-shadow:0 4px 20px rgba(124,58,237,.3);}
@@ -190,6 +194,12 @@ footer a{color:var(--accent2);text-decoration:none;}
 .toast.err{background:#ef4444;color:#fff;}
 .toast.warn{background:#f59e0b;color:#000;}
 .toast.ok{background:var(--accent2);color:#000;}
+/* Settings section divider */
+.cfg-section-title{font-size:.7rem;font-weight:700;letter-spacing:2px;color:var(--accent2);font-family:'Space Mono',monospace;margin:18px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--border);}
+.cfg-row{display:flex;align-items:center;gap:10px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:11px 14px;margin-bottom:8px;}
+.cfg-ico{font-size:1.1rem;flex-shrink:0;}
+.cfg-lbl{font-size:.6rem;color:var(--muted);font-weight:700;letter-spacing:1.5px;font-family:'Space Mono',monospace;margin-bottom:2px;}
+.cfg-val{font-size:.82rem;color:var(--accent2);font-weight:600;word-break:break-all;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(22px);}to{opacity:1;transform:translateY(0);}}
 @keyframes cardIn{from{opacity:0;transform:translateY(18px) scale(.97);}to{opacity:1;transform:translateY(0) scale(1);}}
 @media(max-width:560px){
@@ -227,6 +237,7 @@ footer a{color:var(--accent2);text-decoration:none;}
       🛡️ ADMIN MODE
       <button class="logout-btn" id="logoutBtn">Keluar</button>
     </div>
+    <button class="settings-btn" id="settingsBtn">⚙️ PENGATURAN</button>
   </div>
 </header>
 
@@ -237,10 +248,7 @@ footer a{color:var(--accent2);text-decoration:none;}
     <div class="music-track-genre" id="musicTrackGenre">Tap ▶ untuk putar</div>
   </div>
   <div class="music-controls">
-    
     <button class="mc-btn mc-play" id="playBtn">▶</button>
-    
-    
   </div>
   <div class="vol-wrap">
     <span class="vol-icon" id="volIcon">🔊</span>
@@ -254,12 +262,12 @@ footer a{color:var(--accent2);text-decoration:none;}
     WhatsApp
   </a>
   <div class="social-divider"></div>
-  <a href="https://t.me/bukan_founder" target="_blank" class="social-link tg">
+  <a href="#" target="_blank" class="social-link tg" id="tgLink">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.927 13.01 5.07 12.12c-.652-.204-.664-.652.136-.964l11.17-4.307c.54-.196 1.016.12.518 1.372z"/></svg>
     Telegram Account
   </a>
   <div class="social-divider"></div>
-  <a href="https://t.me/elzstore_id" target="_blank" class="social-link ch" id="channelLink">
+  <a href="#" target="_blank" class="social-link ch" id="channelLink">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
     Channel Telegram
   </a>
@@ -350,6 +358,67 @@ footer a{color:var(--accent2);text-decoration:none;}
   </div>
 </div>
 
+<!-- SETTINGS MODAL -->
+<div class="overlay" id="settingsModal">
+  <div class="modal" style="max-width:500px;">
+    <button class="close-btn" onclick="closeOverlay('settingsModal')">✕</button>
+    <h2>⚙️ Pengaturan Toko</h2>
+    <p class="modal-sub">Perubahan langsung berlaku & tersimpan otomatis.</p>
+
+    <div class="cfg-section-title">📌 NILAI AKTIF SAAT INI</div>
+    <div class="cfg-row"><div class="cfg-ico">🏪</div><div><div class="cfg-lbl">NAMA TOKO</div><div class="cfg-val" id="cfgNamaVal">—</div></div></div>
+    <div class="cfg-row"><div class="cfg-ico">🏷️</div><div><div class="cfg-lbl">TAGLINE</div><div class="cfg-val" id="cfgTaglineVal">—</div></div></div>
+    <div class="cfg-row"><div class="cfg-ico">⚡</div><div><div class="cfg-lbl">BADGE HEADER</div><div class="cfg-val" id="cfgBadgeVal">—</div></div></div>
+    <div class="cfg-row"><div class="cfg-ico">📲</div><div><div class="cfg-lbl">TELEGRAM ADMIN</div><div class="cfg-val" id="cfgTgVal">—</div></div></div>
+    <div class="cfg-row"><div class="cfg-ico">📱</div><div><div class="cfg-lbl">NOMOR WHATSAPP</div><div class="cfg-val" id="cfgWaVal">—</div></div></div>
+    <div class="cfg-row"><div class="cfg-ico">📢</div><div><div class="cfg-lbl">CHANNEL TELEGRAM</div><div class="cfg-val" id="cfgChVal">—</div></div></div>
+    <div class="cfg-row"><div class="cfg-ico">💱</div><div><div class="cfg-lbl">MATA UANG</div><div class="cfg-val" id="cfgCurrVal">—</div></div></div>
+
+    <div class="cfg-section-title">✏️ UBAH PENGATURAN</div>
+    <div class="fg">
+      <label>NAMA TOKO *</label>
+      <input type="text" id="sCfgNama" placeholder="Nama toko kamu"/>
+    </div>
+    <div class="fg">
+      <label>TAGLINE</label>
+      <input type="text" id="sCfgTagline" placeholder="Slogan / tagline toko"/>
+    </div>
+    <div class="fg">
+      <label>BADGE HEADER</label>
+      <input type="text" id="sCfgBadge" placeholder="⚡ TRUSTED SELLER"/>
+    </div>
+    <div class="fg">
+      <label>USERNAME TELEGRAM ADMIN (tanpa @) *</label>
+      <input type="text" id="sCfgTg" placeholder="username_admin"/>
+    </div>
+    <div class="fg">
+      <label>NOMOR WHATSAPP * (tanpa +, contoh: 6281234567890)</label>
+      <input type="text" id="sCfgWa" placeholder="6281234567890" inputmode="numeric"/>
+    </div>
+    <div class="fg">
+      <label>LINK CHANNEL TELEGRAM</label>
+      <input type="text" id="sCfgCh" placeholder="https://t.me/namachannel"/>
+    </div>
+    <div class="fg">
+      <label>SIMBOL MATA UANG</label>
+      <input type="text" id="sCfgCurr" placeholder="Rp" style="max-width:100px;"/>
+    </div>
+    <div class="fg">
+      <label>KATEGORI PRODUK (pisah koma, awali dengan Semua)</label>
+      <input type="text" id="sCfgCats" placeholder="Semua, Bot, Tools, Payment, Hosting"/>
+      <div class="hint">Contoh: Semua, Bot, Tools, Payment, Hosting</div>
+    </div>
+    <div class="fg">
+      <label>PASSWORD ADMIN BARU <span style="color:var(--muted);font-weight:400;">(kosongkan = tidak ubah)</span></label>
+      <input type="password" id="sCfgPw" placeholder="Password baru"/>
+    </div>
+    <div class="btn-row" style="margin-top:8px;">
+      <button class="cancel-btn" onclick="closeOverlay('settingsModal')">Batal</button>
+      <button class="submit-btn" id="saveCfgBtn">💾 Simpan Semua</button>
+    </div>
+  </div>
+</div>
+
 <button class="wa-float" id="waFloat" title="Chat WhatsApp">
   <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.122.556 4.112 1.528 5.837L.057 23.5l5.805-1.52A11.943 11.943 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.907 0-3.693-.5-5.24-1.373l-.374-.222-3.896 1.02 1.04-3.797-.244-.39A9.96 9.96 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
 </button>
@@ -364,84 +433,23 @@ footer a{color:var(--accent2);text-decoration:none;}
 
 <script>
 // ╔══════════════════════════════════════════════════════╗
-// ║  KONFIGURASI TOKO — edit bagian ini saja            ║
+// ║  KONFIGURASI DEFAULT — hanya dipakai pertama kali   ║
+// ║  Setelah itu diatur dari panel ⚙️ Pengaturan        ║
 // ╚══════════════════════════════════════════════════════╝
-
-var STORE = {
+var STORE_DEFAULT = {
   name:            'GARFIELD STORE',
   tagline:         'Solusi Bot Telegram Terbaik & Terpercaya',
-  telegram:        'https://t.me/bukan_founder',  // link Telegram admin
-  telegramUser:    '@bukan_founder',               // username Telegram
-  telegramChannel: 'https://t.me/elzstore_id',    // link channel
-  waNumber:        '6282114874843',               // nomor WA tanpa +
+  telegram:        'https://t.me/bukan_founder',
+  telegramUser:    '@bukan_founder',
+  telegramChannel: 'https://t.me/elzstore_id',
+  waNumber:        '6282114874843',
   badge:           '⚡ TRUSTED SELLER',
   currency:        'Rp',
-  adminPassword:   'Malik10_',                  // password admin
+  adminPassword:   'admin123',
   categories:      ['Semua', 'Bot', 'Tools', 'Payment', 'Hosting'],
 };
 
-var allProducts = [
-  {
-    id: '1', name: 'Userbot', icon: '🤖', category: 'Bot',
-    description: 'Userbot Telegram canggih dengan fitur lengkap. Auto-reply, anti-spam, dan banyak plugin siap pakai.',
-    features: ['Auto Reply', 'Anti Spam', 'Anti Gcast', 'Auto Rep JSON', 'Support Music Bot', 'Multi Plugin', 'Support 24/7'],
-    price: 10000, badge: 'POPULER', badgeColor: '#ff6b35',
-  },
-  {
-    id: '2', name: 'Force Sub Bot', icon: '🔒', category: 'Bot',
-    description: 'Bot wajib subscribe sebelum bisa mengakses grup/channel. Efektif tingkatkan member.',
-    features: ['Multi Channel', 'Custom Pesan', 'Auto Kick', 'Log Admin'],
-    price: 20000, badge: 'HOT', badgeColor: '#e63946',
-  },
-  {
-    id: '3', name: 'Ankes Bot', icon: '📋', category: 'Bot',
-    description: 'Bot ankes & kuesioner otomatis untuk Telegram. Kumpulkan data dengan mudah dan cepat.',
-    features: ['Form Custom', 'Export Data', 'Auto Notif', 'Multi Pertanyaan'],
-    price: 15000, badge: null, badgeColor: null,
-  },
-  {
-    id: '4', name: 'Bot Music', icon: '🎵', category: 'Bot',
-    description: 'Bot pemutar musik berkualitas tinggi untuk grup Telegram. Support YouTube & Spotify.',
-    features: ['YouTube & Spotify', 'Queue System', 'Lyric Support', 'HD Audio'],
-    price: 180000, badge: 'NEW', badgeColor: '#2ec4b6',
-  },
-  {
-    id: '5', name: 'Tagall Partner', icon: '📢', category: 'Tools',
-    description: 'Bot tag semua member grup sekaligus. Cocok untuk pengumuman penting dan promosi.',
-    features: ['Tag Semua Member', 'Cooldown Anti-Ban', 'Custom Pesan', 'Jadwal Kirim'],
-    price: 10000, badge: 'POPULER', badgeColor: '#ff6b35',
-  },
-  {
-    id: '6', name: 'VIP Payment Gateway', icon: '💳', category: 'Payment',
-    description: 'Gateway pembayaran otomatis untuk bisnis digital kamu. Support QRIS, Transfer Bank & e-Wallet, Cashify, Saweria.',
-    features: ['QRIS Otomatis', 'Transfer Bank', 'GoPay & OVO', 'Dashboard Laporan'],
-    price: 50000, badge: 'VIP', badgeColor: '#ffd700',
-  },
-  {
-    id: '7', name: 'Push Member', icon: '🚀', category: 'Tools',
-    description: 'Layanan tambah member Telegram grup/channel secara organik dan aman dari ban.',
-    features: ['Member Real', 'Anti Ban', 'Proses Cepat', 'Garansi Refill'],
-    price: 30000, badge: 'BEST SELLER', badgeColor: '#8338ec',
-  },
-  {
-    id: '8', name: 'VPS', icon: '🖥️', category: 'Hosting',
-    description: 'Virtual Private Server kencang dan stabil untuk hosting bot Telegram kamu 24/7.',
-    features: ['Uptime 99.9%', 'SSD NVMe', 'Bandwidth Unlimited', 'IP Dedicated'],
-    price: 180000, badge: 'STABIL', badgeColor: '#06d6a0',
-  },
-  // ── Template tambah produk baru ──────────────────────
-  // {
-  //   id: '9', name: 'Nama Produk', icon: '🔥', category: 'Bot',
-  //   description: 'Deskripsi produk.',
-  //   features: ['Fitur 1', 'Fitur 2', 'Fitur 3'],
-  //   price: 50000, badge: 'NEW', badgeColor: '#ff6b35',
-  // },
-];
-
-// ╔══════════════════════════════════════════════════════╗
-// ║  JSONBIN (opsional) — kosongkan BIN_ID jika         ║
-// ║  tidak pakai, produk pakai data di atas saja        ║
-// ╚══════════════════════════════════════════════════════╝
+// JSONBIN — tidak bisa diubah dari panel (keamanan)
 var JSONBIN = {
   API_KEY: '$2a$10$Cw3J82QoT.3Jf0vOIdI3ru3HzBdqeHslgw2trkTFDfQ.XS4F5WcNO',
   BIN_ID:  '69acc232d0ea881f40faaa29',
@@ -449,78 +457,73 @@ var JSONBIN = {
 var configured = JSONBIN.API_KEY !== 'GANTI_API_KEY_JSONBIN' && JSONBIN.BIN_ID !== '';
 var BASE_URL = 'https://api.jsonbin.io/v3/b';
 
+// ── Muat settings dari localStorage (override default) ──
+var STORE = Object.assign({}, STORE_DEFAULT);
+function loadStoreSettings(){
+  try{
+    var s = localStorage.getItem('elzstore_cfg');
+    if(!s) return;
+    var c = JSON.parse(s);
+    if(c.name)            STORE.name            = c.name;
+    if(c.tagline)         STORE.tagline         = c.tagline;
+    if(c.badge)           STORE.badge           = c.badge;
+    if(c.tg)             {STORE.telegram='https://t.me/'+c.tg; STORE.telegramUser='@'+c.tg;}
+    if(c.wa)              STORE.waNumber        = c.wa;
+    if(c.ch)              STORE.telegramChannel = c.ch;
+    if(c.currency)        STORE.currency        = c.currency;
+    if(c.categories)      STORE.categories      = c.categories;
+    if(c.adminPassword)   STORE.adminPassword   = c.adminPassword;
+  }catch(e){}
+}
+loadStoreSettings();
+
 // ── Telegram Mini App ──
 if(window.Telegram && window.Telegram.WebApp){ Telegram.WebApp.expand(); Telegram.WebApp.ready(); }
 
 // ── State ──
 var isAdmin=false, activeFilter='Semua', pendingDelId=null, isEditMode=false;
 var cart=[];
+var allProducts = [
+  {id:'1',name:'Userbot',icon:'🤖',category:'Bot',description:'Userbot Telegram canggih dengan fitur lengkap. Auto-reply, anti-spam, dan banyak plugin siap pakai.',features:['Auto Reply','Anti Spam','Anti Gcast','Auto Rep JSON','Support Music Bot','Multi Plugin','Support 24/7'],price:10000,badge:'POPULER',badgeColor:'#ff6b35'},
+  {id:'2',name:'Force Sub Bot',icon:'🔒',category:'Bot',description:'Bot wajib subscribe sebelum bisa mengakses grup/channel. Efektif tingkatkan member.',features:['Multi Channel','Custom Pesan','Auto Kick','Log Admin'],price:20000,badge:'HOT',badgeColor:'#e63946'},
+  {id:'3',name:'Ankes Bot',icon:'📋',category:'Bot',description:'Bot ankes & kuesioner otomatis untuk Telegram. Kumpulkan data dengan mudah dan cepat.',features:['Form Custom','Export Data','Auto Notif','Multi Pertanyaan'],price:15000,badge:null,badgeColor:null},
+  {id:'4',name:'Bot Music',icon:'🎵',category:'Bot',description:'Bot pemutar musik berkualitas tinggi untuk grup Telegram. Support YouTube & Spotify.',features:['YouTube & Spotify','Queue System','Lyric Support','HD Audio'],price:180000,badge:'NEW',badgeColor:'#2ec4b6'},
+  {id:'5',name:'Tagall Partner',icon:'📢',category:'Tools',description:'Bot tag semua member grup sekaligus. Cocok untuk pengumuman penting dan promosi.',features:['Tag Semua Member','Cooldown Anti-Ban','Custom Pesan','Jadwal Kirim'],price:10000,badge:'POPULER',badgeColor:'#ff6b35'},
+  {id:'6',name:'VIP Payment Gateway',icon:'💳',category:'Payment',description:'Gateway pembayaran otomatis untuk bisnis digital kamu. Support QRIS, Transfer Bank & e-Wallet.',features:['QRIS Otomatis','Transfer Bank','GoPay & OVO','Dashboard Laporan'],price:50000,badge:'VIP',badgeColor:'#ffd700'},
+  {id:'7',name:'Push Member',icon:'🚀',category:'Tools',description:'Layanan tambah member Telegram grup/channel secara organik dan aman dari ban.',features:['Member Real','Anti Ban','Proses Cepat','Garansi Refill'],price:30000,badge:'BEST SELLER',badgeColor:'#8338ec'},
+  {id:'8',name:'VPS',icon:'🖥️',category:'Hosting',description:'Virtual Private Server kencang dan stabil untuk hosting bot Telegram kamu 24/7.',features:['Uptime 99.9%','SSD NVMe','Bandwidth Unlimited','IP Dedicated'],price:180000,badge:'STABIL',badgeColor:'#06d6a0'},
+];
 
 // ── Utils ──
 function fmt(n){ return String(n).replace(/\B(?=(\d{3})+(?!\d))/g,'.'); }
-function toast(msg,type){
-  var t=document.getElementById('toast');
-  t.textContent=msg; t.className='toast show'+(type?' '+type:'');
-  clearTimeout(t._t); t._t=setTimeout(function(){t.className='toast';},3500);
-}
+function toast(msg,type){var t=document.getElementById('toast');t.textContent=msg;t.className='toast show'+(type?' '+type:'');clearTimeout(t._t);t._t=setTimeout(function(){t.className='toast';},3500);}
 function openOverlay(id){ document.getElementById(id).classList.add('open'); }
 function closeOverlay(id){ document.getElementById(id).classList.remove('open'); }
 function orderLink(p){
-  var msg='🛒 *ORDER PRODUK*\n━━━━━━━━━━━━━━━━\n'+
-    '📦 Produk  : '+p.name+'\n'+'💰 Harga   : '+STORE.currency+' '+fmt(p.price)+'\n'+
-    (p.category?'📂 Kategori: '+p.category+'\n':'')+
-    (p.features&&p.features.length?'✅ Fitur    : '+p.features.join(', ')+'\n':'')+
-    '━━━━━━━━━━━━━━━━\nHalo Admin, saya ingin memesan produk di atas. Mohon konfirmasinya. 🙏';
+  var msg='🛒 *ORDER PRODUK*\n━━━━━━━━━━━━━━━━\n'+'📦 Produk  : '+p.name+'\n'+'💰 Harga   : '+STORE.currency+' '+fmt(p.price)+'\n'+(p.category?'📂 Kategori: '+p.category+'\n':'')+(p.features&&p.features.length?'✅ Fitur    : '+p.features.join(', ')+'\n':'')+'━━━━━━━━━━━━━━━━\nHalo Admin, saya ingin memesan produk di atas. Mohon konfirmasinya. 🙏';
   return STORE.telegram+'?text='+encodeURIComponent(msg);
 }
 
 // ── Keranjang ──
 function cartCount(){ return cart.reduce(function(s,x){return s+x.qty;},0); }
 function cartTotal(){ return cart.reduce(function(s,x){return s+x.price*x.qty;},0); }
-function syncCartBadge(){
-  var n=cartCount(),b=document.getElementById('cartBadge');
-  b.textContent=n; n>0?b.classList.add('show'):b.classList.remove('show');
-}
+function syncCartBadge(){var n=cartCount(),b=document.getElementById('cartBadge');b.textContent=n;n>0?b.classList.add('show'):b.classList.remove('show');}
 function addToCart(pid){
-  var p=allProducts.find(function(x){return String(x.id)===String(pid);});
-  if(!p)return;
+  var p=allProducts.find(function(x){return String(x.id)===String(pid);});if(!p)return;
   var ex=cart.find(function(x){return String(x.id)===String(pid);});
   if(ex){ex.qty++;toast('🛒 '+p.name+' +1 ke keranjang','ok');}
   else{cart.push({id:String(p.id),name:p.name,icon:p.icon||'📦',price:p.price,qty:1});toast('✅ '+p.name+' ditambahkan!','ok');}
-  syncCartBadge(); renderGrid();
+  syncCartBadge();renderGrid();
 }
-function removeFromCart(pid){
-  cart=cart.filter(function(x){return String(x.id)!==String(pid);});
-  syncCartBadge();renderCartModal();renderGrid();
-}
-function setQty(pid,qty){
-  if(qty<1){removeFromCart(pid);return;}
-  var item=cart.find(function(x){return String(x.id)===String(pid);});
-  if(item){item.qty=qty;syncCartBadge();renderCartModal();}
-}
-function clearCart(){ cart=[];syncCartBadge();renderCartModal();renderGrid();toast('🗑️ Keranjang dikosongkan'); }
+function removeFromCart(pid){cart=cart.filter(function(x){return String(x.id)!==String(pid);});syncCartBadge();renderCartModal();renderGrid();}
+function setQty(pid,qty){if(qty<1){removeFromCart(pid);return;}var item=cart.find(function(x){return String(x.id)===String(pid);});if(item){item.qty=qty;syncCartBadge();renderCartModal();}}
+function clearCart(){cart=[];syncCartBadge();renderCartModal();renderGrid();toast('🗑️ Keranjang dikosongkan');}
 function renderCartModal(){
   var body=document.getElementById('cartBody'),sub=document.getElementById('cartSub');
   sub.textContent=cartCount()+' item dipilih · Total: '+STORE.currency+' '+fmt(cartTotal());
   if(!cart.length){body.innerHTML='<div class="cart-empty"><div class="ce-ico">🛒</div><p>Keranjang kamu masih kosong.<br/>Tambahkan produk dari halaman utama!</p></div>';return;}
-  var rows=cart.map(function(item){
-    return '<div class="cart-item-row">'+
-      '<div class="ci-icon">'+item.icon+'</div>'+
-      '<div class="ci-info"><div class="ci-name">'+item.name+'</div>'+
-      '<div class="ci-price">'+STORE.currency+' '+fmt(item.price)+' × '+item.qty+' = <strong>'+STORE.currency+' '+fmt(item.price*item.qty)+'</strong></div></div>'+
-      '<div class="ci-ctrl">'+
-        '<button class="qty-btn" onclick="setQty(\''+item.id+'\','+(item.qty-1)+')">−</button>'+
-        '<span class="qty-val">'+item.qty+'</span>'+
-        '<button class="qty-btn" onclick="setQty(\''+item.id+'\','+(item.qty+1)+')">+</button>'+
-        '<button class="ci-del" onclick="removeFromCart(\''+item.id+'\')">✕</button>'+
-      '</div></div>';
-  }).join('');
-  body.innerHTML=rows+
-    '<div class="cart-total-box"><span class="cart-total-lbl">TOTAL PEMBAYARAN</span><span class="cart-total-val">'+STORE.currency+' '+fmt(cartTotal())+'</span></div>'+
-    '<button class="checkout-btn" onclick="doCheckout()">'+
-      '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.927 13.01 5.07 12.12c-.652-.204-.664-.652.136-.964l11.17-4.307c.54-.196 1.016.12.518 1.372z"/></svg>'+
-      'Checkout ke Admin Telegram</button>'+
-    '<button class="cart-clear-btn" onclick="clearCart()">🗑️ Kosongkan Keranjang</button>';
+  var rows=cart.map(function(item){return '<div class="cart-item-row"><div class="ci-icon">'+item.icon+'</div><div class="ci-info"><div class="ci-name">'+item.name+'</div><div class="ci-price">'+STORE.currency+' '+fmt(item.price)+' × '+item.qty+' = <strong>'+STORE.currency+' '+fmt(item.price*item.qty)+'</strong></div></div><div class="ci-ctrl"><button class="qty-btn" onclick="setQty(\''+item.id+'\','+(item.qty-1)+')">−</button><span class="qty-val">'+item.qty+'</span><button class="qty-btn" onclick="setQty(\''+item.id+'\','+(item.qty+1)+')">+</button><button class="ci-del" onclick="removeFromCart(\''+item.id+'\')">✕</button></div></div>';}).join('');
+  body.innerHTML=rows+'<div class="cart-total-box"><span class="cart-total-lbl">TOTAL PEMBAYARAN</span><span class="cart-total-val">'+STORE.currency+' '+fmt(cartTotal())+'</span></div><button class="checkout-btn" onclick="doCheckout()"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.927 13.01 5.07 12.12c-.652-.204-.664-.652.136-.964l11.17-4.307c.54-.196 1.016.12.518 1.372z"/></svg>Checkout ke Admin Telegram</button><button class="cart-clear-btn" onclick="clearCart()">🗑️ Kosongkan Keranjang</button>';
 }
 function doCheckout(){
   if(!cart.length){toast('❌ Keranjang kosong!','err');return;}
@@ -538,18 +541,14 @@ document.getElementById('cartFab').addEventListener('click',function(){renderCar
 document.getElementById('cartModal').addEventListener('click',function(e){if(e.target.id==='cartModal')closeOverlay('cartModal');});
 
 // ── Musik ──
-// 1 radio stream lofi 24/7 — selalu aktif, tidak perlu file MP3
-var TRACKS=[
-  {name:'ElZ Lo-Fi Radio', genre:'Lo-Fi Chill · 24/7 Live', url:'https://cs1.mp3.pm/download/100033008/amdUMFJFdmx0VDEyeHliNU9BRHFub0wybS9lVWJJNUM1d3ZJRk5Cemh6dFFocWlQQ1dvNGo4TUxQSVg1cGw1MzhBNEZ6OXAwdUNITnUxaW5lV0NBSnAyZ21JME9SNTNSOFFocmp2N3MvcG5RQTMvSzZSV2hnQ3c5ak1BU3h2Z1c/Muse_-_Hysteria_-_Muse_-_Hysteria_(mp3.pm).mp3'},
-];
+var TRACKS=[{name:'ElZ Lo-Fi Radio',genre:'Lo-Fi Chill · 24/7 Live',url:'https://cs1.mp3.pm/download/100033008/amdUMFJFdmx0VDEyeHliNU9BRHFub0wybS9lVWJJNUM1d3ZJRk5Cemh6dFFocWlQQ1dvNGo4TUxQSVg1cGw1MzhBNEZ6OXAwdUNITnUxaW5lV0NBSnAyZ21JME9SNTNSOFFocmp2N3MvcG5RQTMvSzZSV2hnQ3c5ak1BU3h2Z1c/Muse_-_Hysteria_-_Muse_-_Hysteria_(mp3.pm).mp3'}];
 var mAudio=null,mPlaying=false,mIdx=0,mVol=50,mAutoplay=true;
 function musicInit(){
-  try{var sv=localStorage.getItem('elzs_vol'),si=localStorage.getItem('elzs_trk'),so=localStorage.getItem('elzs_off');
-    if(sv!==null)mVol=parseInt(sv);if(si!==null)mIdx=parseInt(si)%TRACKS.length;if(so==='1')mAutoplay=false;}catch(e){}
+  try{var sv=localStorage.getItem('elzs_vol'),si=localStorage.getItem('elzs_trk'),so=localStorage.getItem('elzs_off');if(sv!==null)mVol=parseInt(sv);if(si!==null)mIdx=parseInt(si)%TRACKS.length;if(so==='1')mAutoplay=false;}catch(e){}
   document.getElementById('volSlider').value=mVol;volStyle();
   mAudio=new Audio();mAudio.volume=mVol/100;mAudio.preload='none';
   mAudio.addEventListener('ended',mNext);
-  mAudio.addEventListener('error',function(){console.warn('Track gagal, skip:',TRACKS[mIdx].name);setTimeout(mNext,800);});
+  mAudio.addEventListener('error',function(){console.warn('Track gagal:',TRACKS[mIdx].name);setTimeout(mNext,800);});
   mAudio.addEventListener('playing',function(){mPlaying=true;mUI();});
   mAudio.addEventListener('pause',function(){if(!mAudio.ended){mPlaying=false;mUI();}});
   mAudio.src=TRACKS[mIdx].url;mUI();renderTracklist();
@@ -565,9 +564,6 @@ function volStyle(){document.getElementById('volSlider').style.setProperty('--vo
 function mUI(){var t=TRACKS[mIdx];document.getElementById('musicTrackName').textContent='🎵 '+t.name;document.getElementById('musicTrackGenre').textContent=mPlaying?t.genre+' · sedang diputar':'Tap ▶ untuk putar';document.getElementById('playBtn').textContent=mPlaying?'⏸':'▶';var eq=document.getElementById('musicEq');mPlaying?eq.classList.add('playing'):eq.classList.remove('playing');renderTracklist();}
 function renderTracklist(){var el=document.getElementById('trackListEl');if(!el)return;el.innerHTML=TRACKS.map(function(t,i){return '<div class="track-row'+(i===mIdx?' active':'')+'" onclick="mPlayIdx('+i+')"><div class="track-num">'+(i+1)+'</div><div class="track-info"><div class="track-name">'+t.name+'</div><div class="track-genre-label">'+t.genre+'</div></div><div class="track-play-ico">'+(mPlaying&&i===mIdx?'🔊':'▶')+'</div></div>';}).join('');}
 document.getElementById('playBtn').addEventListener('click',mToggle);
-
-
-
 document.getElementById('volSlider').addEventListener('input',function(){mSetVol(this.value);});
 document.getElementById('trackModal').addEventListener('click',function(e){if(e.target.id==='trackModal')closeOverlay('trackModal');});
 
@@ -592,21 +588,11 @@ async function saveProducts(){
 function renderStats(){
   var cats={};allProducts.forEach(function(p){cats[p.category]=1;});
   var minP=allProducts.length?allProducts.reduce(function(m,p){return Math.min(m,p.price);},Infinity):0;
-  document.getElementById('statsBar').innerHTML=
-    '<div class="stat-item"><span class="stat-num">'+allProducts.length+'</span><span class="stat-label">PRODUK</span></div>'+
-    '<div class="stat-item"><span class="stat-num">'+Object.keys(cats).length+'</span><span class="stat-label">KATEGORI</span></div>'+
-    '<div class="stat-item"><span class="stat-num">24/7</span><span class="stat-label">SUPPORT</span></div>'+
-    '<div class="stat-item"><span class="stat-num">'+(minP?STORE.currency+Math.round(minP/1000)+'K':'-')+'</span><span class="stat-label">MULAI DARI</span></div>';
+  document.getElementById('statsBar').innerHTML='<div class="stat-item"><span class="stat-num">'+allProducts.length+'</span><span class="stat-label">PRODUK</span></div>'+'<div class="stat-item"><span class="stat-num">'+Object.keys(cats).length+'</span><span class="stat-label">KATEGORI</span></div>'+'<div class="stat-item"><span class="stat-num">24/7</span><span class="stat-label">SUPPORT</span></div>'+'<div class="stat-item"><span class="stat-num">'+(minP?STORE.currency+Math.round(minP/1000)+'K':'-')+'</span><span class="stat-label">MULAI DARI</span></div>';
 }
 function renderFilter(){
   var bar=document.getElementById('filterBar');bar.innerHTML='';
-  STORE.categories.forEach(function(cat){
-    var btn=document.createElement('button');
-    btn.className='filter-btn'+(cat===activeFilter?' active':'');
-    btn.textContent=cat;
-    btn.onclick=function(){activeFilter=cat;renderFilter();renderGrid();};
-    bar.appendChild(btn);
-  });
+  STORE.categories.forEach(function(cat){var btn=document.createElement('button');btn.className='filter-btn'+(cat===activeFilter?' active':'');btn.textContent=cat;btn.onclick=function(){activeFilter=cat;renderFilter();renderGrid();};bar.appendChild(btn);});
 }
 function renderGrid(){
   var grid=document.getElementById('grid');
@@ -615,36 +601,13 @@ function renderGrid(){
   if(!list.length){grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--muted)"><div style="font-size:3rem;margin-bottom:12px">📭</div><p>'+(isAdmin?'Belum ada produk. Klik ➕ untuk tambah!':'Belum ada produk tersedia.')+'</p></div>';}
   list.forEach(function(p,i){
     var inCart=cart.some(function(x){return String(x.id)===String(p.id);});
-    var card=document.createElement('div');
-    card.className='card';card.style.animationDelay=(i*0.05)+'s';
+    var card=document.createElement('div');card.className='card';card.style.animationDelay=(i*0.05)+'s';
     var featsHtml=(p.features||[]).map(function(f){return '<span class="feature-tag">'+f+'</span>';}).join('');
-    card.innerHTML=
-      (p.badge?'<div class="card-badge" style="background:'+(p.badgeColor||'#7c3aed')+'">'+p.badge+'</div>':'')+
-      '<span class="card-icon">'+(p.icon||'📦')+'</span>'+
-      '<div class="card-category">'+p.category+'</div>'+
-      '<div class="card-name">'+p.name+'</div>'+
-      '<div class="card-desc">'+p.description+'</div>'+
-      '<div class="features-list">'+featsHtml+'</div>'+
-      '<div class="card-footer">'+
-        '<div><div class="price-label">HARGA</div><div class="price-amount"><span>'+STORE.currency+' </span>'+fmt(p.price)+'</div></div>'+
-        '<div class="card-btns">'+
-          '<button class="cart-add-btn'+(inCart?' in-cart':'')+'" data-id="'+p.id+'">'+(inCart?'✅':'🛒')+'</button>'+
-          '<a href="'+orderLink(p)+'" target="_blank" class="order-btn">'+
-            '<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.927 13.01 5.07 12.12c-.652-.204-.664-.652.136-.964l11.17-4.307c.54-.196 1.016.12.518 1.372z"/></svg>Order</a>'+
-        '</div>'+
-      '</div>'+
-      '<div class="admin-actions">'+
-        '<button class="btn-edit" data-id="'+p.id+'">✏️ Edit</button>'+
-        '<button class="btn-del" data-id="'+p.id+'" data-name="'+p.name+'">🗑️ Hapus</button>'+
-      '</div>';
+    card.innerHTML=(p.badge?'<div class="card-badge" style="background:'+(p.badgeColor||'#7c3aed')+'">'+p.badge+'</div>':'')+'<span class="card-icon">'+(p.icon||'📦')+'</span>'+'<div class="card-category">'+p.category+'</div>'+'<div class="card-name">'+p.name+'</div>'+'<div class="card-desc">'+p.description+'</div>'+'<div class="features-list">'+featsHtml+'</div>'+'<div class="card-footer"><div><div class="price-label">HARGA</div><div class="price-amount"><span>'+STORE.currency+' </span>'+fmt(p.price)+'</div></div>'+'<div class="card-btns"><button class="cart-add-btn'+(inCart?' in-cart':'')+'" data-id="'+p.id+'">'+(inCart?'✅':'🛒')+'</button><a href="'+orderLink(p)+'" target="_blank" class="order-btn"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.927 13.01 5.07 12.12c-.652-.204-.664-.652.136-.964l11.17-4.307c.54-.196 1.016.12.518 1.372z"/></svg>Order</a></div></div>'+'<div class="admin-actions"><button class="btn-edit" data-id="'+p.id+'">✏️ Edit</button><button class="btn-del" data-id="'+p.id+'" data-name="'+p.name+'">🗑️ Hapus</button></div>';
     grid.appendChild(card);
   });
   grid.querySelectorAll('.cart-add-btn').forEach(function(btn){btn.addEventListener('click',function(){addToCart(btn.getAttribute('data-id'));});});
-  var addCard=document.createElement('div');
-  addCard.className='add-card';
-  addCard.innerHTML='<div class="add-icon">➕</div><div class="add-text">Tambah Produk Baru</div><div class="add-sub">Langsung terlihat semua pelanggan</div>';
-  addCard.onclick=function(){openAddModal();};
-  grid.appendChild(addCard);
+  var addCard=document.createElement('div');addCard.className='add-card';addCard.innerHTML='<div class="add-icon">➕</div><div class="add-text">Tambah Produk Baru</div><div class="add-sub">Langsung terlihat semua pelanggan</div>';addCard.onclick=function(){openAddModal();};grid.appendChild(addCard);
   grid.querySelectorAll('.btn-edit').forEach(function(btn){btn.addEventListener('click',function(){openEditModal(btn.getAttribute('data-id'));});});
   grid.querySelectorAll('.btn-del').forEach(function(btn){btn.addEventListener('click',function(){pendingDelId=btn.getAttribute('data-id');document.getElementById('delSub').innerHTML='Produk <strong style="color:var(--accent2)">'+btn.getAttribute('data-name')+'</strong> akan dihapus permanen.';openOverlay('delModal');});});
 }
@@ -664,7 +627,7 @@ document.getElementById('saveProd').addEventListener('click',async function(){
   if(!name||!desc){toast('❌ Nama & deskripsi wajib diisi!','err');return;}
   var btn=document.getElementById('saveProd');btn.disabled=true;btn.textContent='⏳ Menyimpan...';
   var featsRaw=document.getElementById('fFeats').value.trim(),badge=document.getElementById('fBadge').value.trim()||null;
-  var data={name,icon:document.getElementById('fIcon').value.trim()||'📦',category:document.getElementById('fCat').value,description:desc,features:featsRaw?featsRaw.split(',').map(function(f){return f.trim();}).filter(Boolean):[],price:parseInt(document.getElementById('fPrice').value)||0,badge,badgeColor:badge?document.getElementById('fColor').value:null};
+  var data={name:name,icon:document.getElementById('fIcon').value.trim()||'📦',category:document.getElementById('fCat').value,description:desc,features:featsRaw?featsRaw.split(',').map(function(f){return f.trim();}).filter(Boolean):[],price:parseInt(document.getElementById('fPrice').value)||0,badge:badge,badgeColor:badge?document.getElementById('fColor').value:null};
   if(isEditMode){var eid=document.getElementById('fId').value;allProducts=allProducts.map(function(p){return String(p.id)===String(eid)?Object.assign({},p,data):p;});}
   else{data.id='p_'+Date.now();allProducts.push(data);}
   try{await saveProducts();toast('✅ "'+name+'" berhasil '+(isEditMode?'diperbarui':'ditambahkan')+'!','ok');closeOverlay('prodModal');renderAll();}
@@ -698,19 +661,87 @@ document.getElementById('pwInput').addEventListener('keydown',function(e){if(e.k
 document.getElementById('pwEye').addEventListener('click',function(){var i=document.getElementById('pwInput');i.type=i.type==='password'?'text':'password';});
 document.getElementById('logoutBtn').addEventListener('click',function(){setAdmin(false);toast('👋 Keluar dari mode admin');});
 
-// ── Init ──
-document.getElementById('storeBadge').textContent   = STORE.badge;
-document.getElementById('storeTitle').textContent   = STORE.name;
-document.getElementById('storeTagline').textContent = STORE.tagline;
-document.getElementById('footerName').textContent   = STORE.name;
-document.getElementById('tgBtn').href               = STORE.telegram;
-document.getElementById('footerTg').href            = STORE.telegram;
-document.getElementById('footerTg').textContent     = STORE.telegramUser;
-document.getElementById('waLink').href              = 'https://wa.me/'+STORE.waNumber;
-document.getElementById('channelLink').href         = STORE.telegramChannel;
-document.getElementById('waFloat').onclick          = function(){window.open('https://wa.me/'+STORE.waNumber,'_blank');};
-document.title = STORE.name;
+// ── Apply DOM ──
+function applyStoreToDOM(){
+  document.getElementById('storeBadge').textContent   = STORE.badge;
+  document.getElementById('storeTitle').textContent   = STORE.name;
+  document.getElementById('storeTagline').textContent = STORE.tagline;
+  document.getElementById('footerName').textContent   = STORE.name;
+  document.getElementById('tgBtn').href               = STORE.telegram;
+  document.getElementById('tgLink').href              = STORE.telegram;
+  document.getElementById('footerTg').href            = STORE.telegram;
+  document.getElementById('footerTg').textContent     = STORE.telegramUser;
+  document.getElementById('waLink').href              = 'https://wa.me/'+STORE.waNumber;
+  document.getElementById('channelLink').href         = STORE.telegramChannel;
+  document.getElementById('waFloat').onclick          = function(){window.open('https://wa.me/'+STORE.waNumber,'_blank');};
+  document.title = STORE.name;
+}
 
+// ── Settings Panel ──
+document.getElementById('settingsBtn').addEventListener('click', function(){
+  var tgUser = STORE.telegramUser.replace(/^@/,'');
+  document.getElementById('cfgNamaVal').textContent    = STORE.name;
+  document.getElementById('cfgTaglineVal').textContent = STORE.tagline;
+  document.getElementById('cfgBadgeVal').textContent   = STORE.badge;
+  document.getElementById('cfgTgVal').textContent      = STORE.telegramUser;
+  document.getElementById('cfgWaVal').textContent      = STORE.waNumber;
+  document.getElementById('cfgChVal').textContent      = STORE.telegramChannel;
+  document.getElementById('cfgCurrVal').textContent    = STORE.currency;
+  document.getElementById('sCfgNama').value    = STORE.name;
+  document.getElementById('sCfgTagline').value = STORE.tagline;
+  document.getElementById('sCfgBadge').value   = STORE.badge;
+  document.getElementById('sCfgTg').value      = tgUser;
+  document.getElementById('sCfgWa').value      = STORE.waNumber;
+  document.getElementById('sCfgCh').value      = STORE.telegramChannel;
+  document.getElementById('sCfgCurr').value    = STORE.currency;
+  document.getElementById('sCfgCats').value    = STORE.categories.join(', ');
+  document.getElementById('sCfgPw').value      = '';
+  openOverlay('settingsModal');
+});
+document.getElementById('settingsModal').addEventListener('click',function(e){if(e.target.id==='settingsModal')closeOverlay('settingsModal');});
+document.getElementById('saveCfgBtn').addEventListener('click', function(){
+  var nama  = document.getElementById('sCfgNama').value.trim();
+  var tg    = document.getElementById('sCfgTg').value.trim().replace(/^@/,'');
+  var wa    = document.getElementById('sCfgWa').value.trim().replace(/[^0-9]/g,'');
+  var ch    = document.getElementById('sCfgCh').value.trim();
+  var tag   = document.getElementById('sCfgTagline').value.trim();
+  var bdg   = document.getElementById('sCfgBadge').value.trim();
+  var curr  = document.getElementById('sCfgCurr').value.trim();
+  var cats  = document.getElementById('sCfgCats').value.trim();
+  var pw    = document.getElementById('sCfgPw').value;
+  if(!nama){toast('❌ Nama toko wajib diisi!','err');return;}
+  if(!tg)  {toast('❌ Username Telegram wajib diisi!','err');return;}
+  if(!wa)  {toast('❌ Nomor WhatsApp wajib diisi!','err');return;}
+  if(nama)  STORE.name            = nama;
+  if(tag)   STORE.tagline         = tag;
+  if(bdg)   STORE.badge           = bdg;
+  STORE.telegram    = 'https://t.me/'+tg;
+  STORE.telegramUser= '@'+tg;
+  STORE.waNumber    = wa;
+  if(ch)    STORE.telegramChannel = ch;
+  if(curr)  STORE.currency        = curr;
+  if(cats){
+    var catsArr = cats.split(',').map(function(c){return c.trim();}).filter(Boolean);
+    if(catsArr.length) STORE.categories = catsArr;
+  }
+  if(pw)    STORE.adminPassword   = pw;
+  try{
+    localStorage.setItem('elzstore_cfg', JSON.stringify({
+      name:STORE.name, tagline:STORE.tagline, badge:STORE.badge,
+      tg:tg, wa:STORE.waNumber, ch:STORE.telegramChannel,
+      currency:STORE.currency, categories:STORE.categories,
+      adminPassword:STORE.adminPassword
+    }));
+  }catch(e){}
+  applyStoreToDOM();
+  activeFilter = STORE.categories[0] || 'Semua';
+  renderAll();
+  closeOverlay('settingsModal');
+  toast('✅ Pengaturan tersimpan!','ok');
+});
+
+// ── Init ──
+applyStoreToDOM();
 loadProducts();
 musicInit();
 </script>
