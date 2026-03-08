@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ELZ STORE</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#09090f;--surface:#12121c;--surface2:#1a1a28;--border:#2a2a40;--accent:#7c3aed;--accent2:#06d6a0;--text:#f0f0ff;--muted:#6b6b8a;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;z-index:0;background-image:linear-gradient(rgba(124,58,237,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(124,58,237,.04) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;}
+.orb{position:fixed;border-radius:50%;filter:blur(120px);pointer-events:none;z-index:0;}
+.orb-1{width:500px;height:500px;background:rgba(124,58,237,.18);top:-100px;right:-100px;}
+.orb-2{width:400px;height:400px;background:rgba(6,214,160,.10);bottom:100px;left:-100px;}
+header{position:relative;z-index:10;text-align:center;padding:70px 20px 50px;}
+.store-badge{display:inline-block;background:linear-gradient(135deg,rgba(124,58,237,.3),rgba(6,214,160,.2));border:1px solid rgba(124,58,237,.4);color:var(--accent2);font-family:'Space Mono',monospace;font-size:11px;letter-spacing:3px;padding:6px 18px;border-radius:100px;margin-bottom:20px;animation:fadeUp .6s ease both;}
+h1.store-title{font-size:clamp(2.2rem,8vw,4.5rem);font-weight:800;line-height:1.05;background:linear-gradient(135deg,#fff 30%,#a78bfa 70%,#06d6a0 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:fadeUp .6s .1s ease both;margin-bottom:14px;}
+.store-tagline{color:var(--muted);font-size:1rem;animation:fadeUp .6s .2s ease both;margin-bottom:36px;}
+.header-actions{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;animation:fadeUp .6s .3s ease both;}
+.header-contact{display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,#7c3aed,#5b21b6);color:#fff;text-decoration:none;font-weight:700;font-size:.95rem;padding:13px 28px;border-radius:12px;transition:transform .2s,box-shadow .2s;box-shadow:0 4px 30px rgba(124,58,237,.35);}
+.header-contact:hover{transform:translateY(-2px);box-shadow:0 8px 40px rgba(124,58,237,.5);}
+.admin-badge{display:none;align-items:center;gap:8px;background:rgba(6,214,160,.15);border:1px solid rgba(6,214,160,.3);color:var(--accent2);font-size:.8rem;font-weight:700;padding:10px 18px;border-radius:12px;font-family:'Space Mono',monospace;letter-spacing:1px;}
+.admin-badge.show{display:inline-flex;}
+.logout-btn{background:none;border:1px solid rgba(255,80,80,.3);color:#ff6b6b;font-size:.75rem;font-weight:700;padding:4px 10px;border-radius:6px;cursor:pointer;font-family:'Space Mono',monospace;transition:all .2s;}
+.logout-btn:hover{background:rgba(255,80,80,.15);}
+.music-bar{position:relative;z-index:10;display:flex;align-items:center;gap:12px;max-width:720px;margin:0 auto 32px;padding:12px 18px;background:var(--surface);border:1px solid var(--border);border-radius:16px;animation:fadeUp .6s .25s ease both;}
+.music-eq{display:flex;align-items:flex-end;gap:2px;width:20px;height:18px;flex-shrink:0;}
+.music-eq span{width:3px;border-radius:2px;background:linear-gradient(to top,var(--accent),var(--accent2));}
+.music-eq span:nth-child(1){height:6px;}
+.music-eq span:nth-child(2){height:14px;}
+.music-eq span:nth-child(3){height:9px;}
+.music-eq span:nth-child(4){height:12px;}
+.music-eq.playing span:nth-child(1){animation:eq1 .7s ease-in-out infinite alternate;}
+.music-eq.playing span:nth-child(2){animation:eq2 .5s ease-in-out infinite alternate;}
+.music-eq.playing span:nth-child(3){animation:eq3 .9s ease-in-out infinite alternate;}
+.music-eq.playing span:nth-child(4){animation:eq4 .6s ease-in-out infinite alternate;}
+@keyframes eq1{from{height:4px}to{height:16px}}
+@keyframes eq2{from{height:14px}to{height:4px}}
+@keyframes eq3{from{height:5px}to{height:18px}}
+@keyframes eq4{from{height:12px}to{height:4px}}
+.music-info{flex:1;min-width:0;}
+.music-track-name{font-size:.78rem;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.music-track-genre{font-size:.65rem;color:var(--muted);font-family:'Space Mono',monospace;margin-top:2px;}
+.music-controls{display:flex;align-items:center;gap:6px;flex-shrink:0;}
+.mc-btn{width:32px;height:32px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);color:var(--muted);font-size:.85rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.mc-btn:hover{border-color:var(--accent);color:var(--accent);}
+.mc-play{background:linear-gradient(135deg,var(--accent),#5b21b6);border:none;color:#fff;width:36px;height:36px;box-shadow:0 3px 12px rgba(124,58,237,.4);}
+.mc-play:hover{transform:scale(1.08);box-shadow:0 5px 20px rgba(124,58,237,.6);}
+.vol-wrap{display:flex;align-items:center;gap:6px;flex-shrink:0;}
+.vol-icon{font-size:.75rem;color:var(--muted);}
+.vol-slider{-webkit-appearance:none;appearance:none;width:70px;height:3px;border-radius:3px;background:linear-gradient(to right,var(--accent) var(--vol,50%),var(--border) var(--vol,50%));outline:none;cursor:pointer;}
+.vol-slider::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;border-radius:50%;background:var(--accent2);cursor:pointer;box-shadow:0 0 6px rgba(6,214,160,.5);}
+.social-bar{position:relative;z-index:10;display:flex;align-items:center;justify-content:center;gap:12px;padding:0 20px 44px;flex-wrap:wrap;animation:fadeUp .6s .32s ease both;}
+.social-link{display:inline-flex;align-items:center;gap:8px;text-decoration:none;font-size:.82rem;font-weight:700;padding:10px 18px;border-radius:100px;transition:all .2s;border:1px solid;}
+.social-link.wa{background:rgba(37,211,102,.1);border-color:rgba(37,211,102,.3);color:#25d366;}
+.social-link.wa:hover{background:#25d366;color:#fff;box-shadow:0 4px 20px rgba(37,211,102,.4);}
+.social-link.tg{background:rgba(0,136,204,.1);border-color:rgba(0,136,204,.3);color:#0088cc;}
+.social-link.tg:hover{background:#0088cc;color:#fff;box-shadow:0 4px 20px rgba(0,136,204,.4);}
+.social-link.ch{background:rgba(124,58,237,.1);border-color:rgba(124,58,237,.3);color:#a78bfa;}
+.social-link.ch:hover{background:var(--accent);color:#fff;box-shadow:0 4px 20px rgba(124,58,237,.4);}
+.social-link svg{flex-shrink:0;}
+.social-divider{width:1px;height:20px;background:var(--border);}
+.stats-bar{position:relative;z-index:10;display:flex;justify-content:center;max-width:560px;margin:0 auto 50px;padding:0 20px;animation:fadeUp .6s .35s ease both;}
+.stat-item{flex:1;text-align:center;padding:18px 10px;background:var(--surface);border:1px solid var(--border);}
+.stat-item:first-child{border-radius:12px 0 0 12px;}
+.stat-item:last-child{border-radius:0 12px 12px 0;}
+.stat-item+.stat-item{border-left:none;}
+.stat-num{font-size:1.5rem;font-weight:800;color:var(--accent2);display:block;}
+.stat-label{font-size:.7rem;color:var(--muted);font-weight:600;letter-spacing:1px;}
+.filter-bar{position:relative;z-index:10;display:flex;gap:8px;flex-wrap:wrap;justify-content:center;padding:0 20px 44px;animation:fadeUp .6s .4s ease both;}
+.filter-btn{background:var(--surface);border:1px solid var(--border);color:var(--muted);font-family:'Syne',sans-serif;font-size:.82rem;font-weight:600;padding:8px 18px;border-radius:100px;cursor:pointer;transition:all .2s;}
+.filter-btn:hover,.filter-btn.active{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 4px 20px rgba(124,58,237,.4);}
+.products-grid{position:relative;z-index:10;display:grid;grid-template-columns:repeat(2,1fr);gap:18px;max-width:1100px;margin:0 auto;padding:0 20px 120px;}
+@media(max-width:640px){.products-grid{grid-template-columns:1fr;}}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:26px;position:relative;overflow:hidden;transition:transform .3s,border-color .3s,box-shadow .3s;animation:cardIn .5s ease both;display:flex;flex-direction:column;}
+.card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at top right,rgba(124,58,237,.15),transparent 70%);pointer-events:none;opacity:0;transition:opacity .3s;}
+.card:hover{transform:translateY(-5px);border-color:var(--accent);box-shadow:0 20px 60px rgba(124,58,237,.2);}
+.card:hover::before{opacity:1;}
+.card-badge{position:absolute;top:18px;right:18px;font-size:.65rem;font-weight:700;font-family:'Space Mono',monospace;padding:4px 10px;border-radius:100px;letter-spacing:1px;color:#fff;}
+.card-icon{font-size:2.4rem;margin-bottom:14px;display:block;}
+.card-category{font-size:.68rem;font-weight:700;letter-spacing:2px;color:var(--accent2);font-family:'Space Mono',monospace;margin-bottom:5px;}
+.card-name{font-size:1.3rem;font-weight:800;margin-bottom:9px;}
+.card-desc{font-size:.86rem;color:var(--muted);line-height:1.6;margin-bottom:16px;flex:1;}
+.features-list{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px;}
+.feature-tag{background:var(--surface2);border:1px solid var(--border);color:#a78bfa;font-size:.7rem;font-weight:600;padding:3px 9px;border-radius:6px;font-family:'Space Mono',monospace;}
+.card-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:auto;}
+.price-label{font-size:.65rem;color:var(--muted);font-weight:600;letter-spacing:1px;}
+.price-amount{font-size:1.4rem;font-weight:800;line-height:1;}
+.price-amount span{font-size:.8rem;color:var(--muted);font-weight:600;}
+.card-btns{display:flex;gap:8px;align-items:center;}
+.order-btn{display:inline-flex;align-items:center;gap:7px;background:linear-gradient(135deg,#7c3aed,#5b21b6);color:#fff;text-decoration:none;font-weight:700;font-size:.83rem;padding:11px 16px;border-radius:10px;transition:transform .2s,box-shadow .2s;white-space:nowrap;box-shadow:0 4px 20px rgba(124,58,237,.3);border:none;cursor:pointer;font-family:'Syne',sans-serif;}
+.order-btn:hover{transform:scale(1.05);box-shadow:0 6px 30px rgba(124,58,237,.5);}
+.cart-add-btn{display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:10px;background:rgba(6,214,160,.1);border:1px solid rgba(6,214,160,.3);color:var(--accent2);font-size:1.1rem;cursor:pointer;transition:all .2s;flex-shrink:0;}
+.cart-add-btn:hover{background:var(--accent2);color:#000;border-color:var(--accent2);}
+.cart-add-btn.in-cart{background:rgba(6,214,160,.25);border-color:var(--accent2);color:var(--accent2);}
+.admin-actions{display:none;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border);}
+body.admin-mode .admin-actions{display:flex;}
+.btn-edit,.btn-del{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;font-family:'Space Mono',monospace;font-size:.72rem;font-weight:700;padding:8px 12px;border-radius:8px;cursor:pointer;border:1px solid;transition:all .2s;}
+.btn-edit{background:rgba(124,58,237,.12);border-color:rgba(124,58,237,.3);color:#a78bfa;}
+.btn-edit:hover{background:rgba(124,58,237,.3);color:#fff;}
+.btn-del{background:rgba(239,68,68,.1);border-color:rgba(239,68,68,.25);color:#f87171;}
+.btn-del:hover{background:rgba(239,68,68,.3);color:#fff;}
+.add-card{background:transparent;border:2px dashed var(--border);border-radius:20px;padding:26px;display:none;flex-direction:column;align-items:center;justify-content:center;gap:10px;cursor:pointer;transition:all .3s;min-height:260px;text-align:center;}
+body.admin-mode .add-card{display:flex;}
+.add-card:hover{border-color:var(--accent);background:rgba(124,58,237,.05);}
+.add-icon{font-size:2.8rem;opacity:.35;transition:opacity .3s;}
+.add-card:hover .add-icon{opacity:1;}
+.add-text{color:var(--muted);font-size:.9rem;font-weight:600;transition:color .3s;}
+.add-card:hover .add-text{color:var(--accent2);}
+.add-sub{color:var(--border);font-size:.72rem;font-family:'Space Mono',monospace;}
+.overlay{position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.85);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .3s;}
+.overlay.open{opacity:1;pointer-events:all;}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:36px;width:100%;max-width:480px;max-height:92vh;overflow-y:auto;transform:scale(.95) translateY(20px);transition:transform .3s;position:relative;}
+.overlay.open .modal{transform:scale(1) translateY(0);}
+@media(max-width:560px){
+  .overlay{align-items:flex-end;padding:0;}
+  .modal{border-radius:24px 24px 0 0;max-height:88vh;padding:28px 20px 36px;}
+}
+.modal h2{font-size:1.4rem;font-weight:800;margin-bottom:6px;background:linear-gradient(135deg,#fff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.modal-sub{color:var(--muted);font-size:.85rem;margin-bottom:26px;}
+.close-btn{position:absolute;top:18px;right:18px;background:var(--surface2);border:1px solid var(--border);color:var(--muted);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.close-btn:hover{background:var(--accent);color:#fff;border-color:var(--accent);}
+.fg{margin-bottom:14px;}
+.fg label{display:block;font-size:.75rem;font-weight:700;color:var(--muted);letter-spacing:1px;margin-bottom:7px;font-family:'Space Mono',monospace;}
+.fg input,.fg textarea,.fg select{width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:'Syne',sans-serif;font-size:.88rem;padding:12px 14px;border-radius:10px;outline:none;transition:border-color .2s;}
+.fg input:focus,.fg textarea:focus,.fg select:focus{border-color:var(--accent);}
+.fg textarea{resize:vertical;min-height:75px;}
+.fg select option{background:var(--surface2);}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.btn-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px;}
+.submit-btn{width:100%;background:linear-gradient(135deg,#7c3aed,#5b21b6);color:#fff;border:none;font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;padding:13px;border-radius:10px;cursor:pointer;transition:box-shadow .2s,transform .2s;box-shadow:0 4px 20px rgba(124,58,237,.3);}
+.submit-btn:hover{box-shadow:0 6px 30px rgba(124,58,237,.5);transform:translateY(-1px);}
+.submit-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+.cancel-btn{background:var(--surface2);border:1px solid var(--border);color:var(--muted);font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;padding:13px;border-radius:10px;cursor:pointer;transition:all .2s;}
+.cancel-btn:hover{border-color:var(--accent);color:var(--text);}
+.lock-icon{font-size:3rem;text-align:center;margin-bottom:16px;}
+.pw-wrap{position:relative;}
+.pw-wrap input{padding-right:44px;}
+.pw-eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;padding:0;}
+.login-error{color:#ff6b6b;font-size:.8rem;font-family:'Space Mono',monospace;margin-top:8px;display:none;text-align:center;}
+.login-error.show{display:block;}
+.confirm-icon{font-size:3rem;text-align:center;margin-bottom:12px;}
+.cart-item-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);}
+.cart-item-row:last-of-type{border-bottom:none;}
+.ci-icon{font-size:1.8rem;flex-shrink:0;width:44px;height:44px;background:var(--surface2);border-radius:10px;display:flex;align-items:center;justify-content:center;}
+.ci-info{flex:1;min-width:0;}
+.ci-name{font-weight:700;font-size:.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ci-price{font-size:.72rem;color:var(--accent2);font-family:'Space Mono',monospace;margin-top:2px;}
+.ci-ctrl{display:flex;align-items:center;gap:5px;flex-shrink:0;}
+.qty-btn{width:28px;height:28px;border-radius:7px;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;transition:border-color .2s;}
+.qty-btn:hover{border-color:var(--accent);}
+.qty-val{font-weight:800;font-size:.9rem;min-width:22px;text-align:center;}
+.ci-del{width:28px;height:28px;border-radius:7px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);color:#f87171;font-size:.7rem;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-left:2px;transition:all .2s;}
+.ci-del:hover{background:#ef4444;color:#fff;}
+.cart-total-box{background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:16px 18px;margin-top:16px;display:flex;justify-content:space-between;align-items:center;}
+.cart-total-lbl{font-size:.75rem;color:var(--muted);font-weight:700;letter-spacing:1px;font-family:'Space Mono',monospace;}
+.cart-total-val{font-size:1.55rem;font-weight:800;background:linear-gradient(135deg,var(--accent2),#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.checkout-btn{width:100%;margin-top:12px;background:linear-gradient(135deg,var(--accent2),#00b388);color:#000;border:none;font-family:'Syne',sans-serif;font-weight:800;font-size:.98rem;padding:14px;border-radius:12px;cursor:pointer;transition:all .2s;box-shadow:0 4px 24px rgba(6,214,160,.35);display:flex;align-items:center;justify-content:center;gap:8px;}
+.checkout-btn:hover{transform:translateY(-2px);box-shadow:0 8px 36px rgba(6,214,160,.55);}
+.cart-clear-btn{width:100%;margin-top:8px;background:transparent;border:1px solid var(--border);color:var(--muted);font-family:'Syne',sans-serif;font-weight:700;font-size:.85rem;padding:10px;border-radius:10px;cursor:pointer;transition:all .2s;}
+.cart-clear-btn:hover{border-color:#ef4444;color:#f87171;}
+.cart-empty{text-align:center;padding:48px 20px;}
+.cart-empty .ce-ico{font-size:3.5rem;margin-bottom:14px;}
+.cart-empty p{color:var(--muted);font-size:.9rem;line-height:1.7;}
+.track-list{display:flex;flex-direction:column;gap:7px;margin-top:4px;}
+.track-row{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:12px;background:var(--surface2);border:1px solid var(--border);cursor:pointer;transition:all .2s;}
+.track-row:hover,.track-row.active{border-color:var(--accent);background:rgba(124,58,237,.12);}
+.track-num{font-size:.65rem;color:var(--muted);font-family:'Space Mono',monospace;width:16px;text-align:center;flex-shrink:0;}
+.track-row.active .track-num{color:var(--accent2);}
+.track-info{flex:1;}
+.track-name{font-size:.88rem;font-weight:700;}
+.track-row.active .track-name{color:var(--accent2);}
+.track-genre-label{font-size:.66rem;color:var(--muted);font-family:'Space Mono',monospace;margin-top:2px;}
+.track-play-ico{font-size:.8rem;color:var(--accent2);visibility:hidden;}
+.track-row.active .track-play-ico{visibility:visible;}
+.cart-fab{position:fixed;bottom:28px;right:164px;z-index:999;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--accent2),#00b388);border:none;color:#000;font-size:1.35rem;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .25s;box-shadow:0 4px 24px rgba(6,214,160,.45);}
+.cart-fab:hover{transform:scale(1.1);box-shadow:0 8px 32px rgba(6,214,160,.7);}
+.cart-badge{position:absolute;top:-5px;right:-5px;min-width:20px;height:20px;background:#ef4444;color:#fff;font-size:.6rem;font-weight:800;border-radius:50%;display:none;align-items:center;justify-content:center;border:2px solid var(--bg);padding:0 3px;font-family:'Space Mono',monospace;}
+.cart-badge.show{display:flex;}
+.wa-float{position:fixed;bottom:28px;right:28px;z-index:998;width:52px;height:52px;border-radius:50%;background:#25d366;border:none;color:#fff;font-size:1.4rem;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(37,211,102,.5);transition:all .2s;}
+.wa-float:hover{transform:scale(1.1);box-shadow:0 6px 28px rgba(37,211,102,.7);}
+.fab{position:fixed;bottom:28px;right:92px;z-index:999;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#5b21b6);border:none;color:#fff;font-size:1.4rem;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .25s;box-shadow:0 4px 24px rgba(124,58,237,.5);}
+.fab:hover{transform:scale(1.1);box-shadow:0 8px 32px rgba(124,58,237,.7);}
+footer{position:relative;z-index:10;text-align:center;padding:40px 20px 120px;color:var(--muted);font-size:.82rem;}
+footer a{color:var(--accent2);text-decoration:none;}
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(120px);font-weight:700;padding:11px 22px;border-radius:100px;z-index:9999;transition:transform .3s;font-size:.88rem;white-space:nowrap;background:var(--accent2);color:#000;pointer-events:none;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+.toast.err{background:#ef4444;color:#fff;}
+.toast.warn{background:#f59e0b;color:#000;}
+.toast.ok{background:var(--accent2);color:#000;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(22px);}to{opacity:1;transform:translateY(0);}}
+@keyframes cardIn{from{opacity:0;transform:translateY(18px) scale(.97);}to{opacity:1;transform:translateY(0) scale(1);}}
+@media(max-width:560px){
+  .frow,.btn-row{grid-template-columns:1fr;}
+  .stats-bar{flex-wrap:wrap;}
+  .stat-item{flex:1 1 45%;}
+  .stat-item:first-child{border-radius:12px 0 0 0;}
+  .stat-item:nth-child(2){border-radius:0 12px 0 0;border-left:1px solid var(--border);}
+  .stat-item:nth-child(3){border-radius:0 0 0 12px;border-top:none;}
+  .stat-item:last-child{border-radius:0 0 12px 0;border-left:1px solid var(--border);border-top:none;}
+  .stat-item+.stat-item{border-left:none;}
+  .social-divider{display:none;}
+  .music-bar{margin:0 16px 28px;}
+  .vol-wrap{display:none;}
+  .fab{bottom:90px;right:28px;}
+  .wa-float{bottom:28px;right:28px;}
+  .cart-fab{bottom:90px;right:92px;}
+}
+</style>
+</head>
+<body>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+
+<header>
+  <div class="store-badge" id="storeBadge"></div>
+  <h1 class="store-title" id="storeTitle"></h1>
+  <p class="store-tagline" id="storeTagline"></p>
+  <div class="header-actions">
+    <a href="#" class="header-contact" id="tgBtn" target="_blank">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.927 13.01 5.07 12.12c-.652-.204-.664-.652.136-.964l11.17-4.307c.54-.196 1.016.12.518 1.372z"/></svg>
+      Hubungi Kami
+    </a>
+    <div class="admin-badge" id="adminBadge">
+      🛡️ ADMIN MODE
+      <button class="logout-btn" id="logoutBtn">Keluar</button>
+    </div>
+  </div>
+</header>
+
+<div class="music-bar">
+  <div class="music-eq" id="musicEq"><span></span><span></span><span></span><span></span></div>
+  <div class="music-info">
+    <div class="music-track-name" id="musicTrackName">🎵 ElZ Vibes</div>
+    <div class="music-track-genre" id="musicTrackGenre">Tap ▶ untuk putar</div>
+  </div>
+  <div class="music-controls">
+    
+    <button class="mc-btn mc-play" id="playBtn">▶</button>
+    
+    
+  </div>
+  <div class="vol-wrap">
+    <span class="vol-icon" id="volIcon">🔊</span>
+    <input type="range" class="vol-slider" id="volSlider" min="0" max="100" value="50"/>
+  </div>
+</div>
+
+<div class="social-bar">
+  <a href="#" class="social-link wa" id="waLink">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.122.556 4.112 1.528 5.837L.057 23.5l5.805-1.52A11.943 11.943 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.907 0-3.693-.5-5.24-1.373l-.374-.222-3.896 1.02 1.04-3.797-.244-.39A9.96 9.96 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+    WhatsApp
+  </a>
+  <div class="social-divider"></div>
+  <a href="https://t.me/bukan_founder" target="_blank" class="social-link tg">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.927 13.01 5.07 12.12c-.652-.204-.664-.652.136-.964l11.17-4.307c.54-.196 1.016.12.518 1.372z"/></svg>
+    Telegram Account
+  </a>
+  <div class="social-divider"></div>
+  <a href="https://t.me/elzstore_id" target="_blank" class="social-link ch" id="channelLink">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+    Channel Telegram
+  </a>
+</div>
+
+<div class="stats-bar" id="statsBar"></div>
+<div class="filter-bar" id="filterBar"></div>
+<div class="products-grid" id="grid"></div>
+
+<!-- LOGIN MODAL -->
+<div class="overlay" id="loginModal">
+  <div class="modal" style="max-width:360px;">
+    <div class="lock-icon">🔐</div>
+    <h2 style="text-align:center;">Admin Login</h2>
+    <p class="modal-sub" style="text-align:center;">Masukkan password admin.</p>
+    <div class="fg">
+      <label>PASSWORD</label>
+      <div class="pw-wrap">
+        <input type="password" id="pwInput" placeholder="••••••••"/>
+        <button class="pw-eye" id="pwEye" type="button">👁️</button>
+      </div>
+    </div>
+    <div class="login-error" id="loginErr">❌ Password salah!</div>
+    <button class="submit-btn" id="loginBtn" style="margin-top:16px;">🔓 Masuk</button>
+  </div>
+</div>
+
+<!-- PRODUK MODAL -->
+<div class="overlay" id="prodModal">
+  <div class="modal">
+    <button class="close-btn" id="closeProdModal">✕</button>
+    <h2 id="prodModalTitle">➕ Tambah Produk</h2>
+    <p class="modal-sub" id="prodModalSub">Produk langsung terlihat semua pelanggan.</p>
+    <input type="hidden" id="fId"/>
+    <div class="frow">
+      <div class="fg"><label>NAMA *</label><input type="text" id="fName" placeholder="Nama produk"/></div>
+      <div class="fg"><label>EMOJI</label><input type="text" id="fIcon" placeholder="🤖" maxlength="2"/></div>
+    </div>
+    <div class="frow">
+      <div class="fg"><label>KATEGORI</label>
+        <select id="fCat"><option>Bot</option><option>Tools</option><option>Payment</option><option>Hosting</option></select>
+      </div>
+      <div class="fg"><label>HARGA (Rp)</label><input type="number" id="fPrice" placeholder="50000"/></div>
+    </div>
+    <div class="fg"><label>DESKRIPSI *</label><textarea id="fDesc" placeholder="Deskripsi produk..."></textarea></div>
+    <div class="fg"><label>FITUR (pisah koma)</label><input type="text" id="fFeats" placeholder="Fitur 1, Fitur 2"/></div>
+    <div class="frow">
+      <div class="fg"><label>BADGE (opsional)</label><input type="text" id="fBadge" placeholder="NEW"/></div>
+      <div class="fg"><label>WARNA BADGE</label><input type="color" id="fColor" value="#7c3aed" style="height:42px;padding:4px 6px;cursor:pointer;"/></div>
+    </div>
+    <div class="btn-row">
+      <button class="cancel-btn" id="cancelProd">Batal</button>
+      <button class="submit-btn" id="saveProd">💾 Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- HAPUS MODAL -->
+<div class="overlay" id="delModal">
+  <div class="modal" style="max-width:360px;text-align:center;">
+    <div class="confirm-icon">🗑️</div>
+    <h2>Hapus Produk?</h2>
+    <p class="modal-sub" id="delSub"></p>
+    <div class="btn-row">
+      <button class="cancel-btn" id="cancelDel">Batal</button>
+      <button class="submit-btn" id="confirmDel" style="background:linear-gradient(135deg,#ef4444,#b91c1c);">🗑️ Hapus</button>
+    </div>
+  </div>
+</div>
+
+<!-- KERANJANG MODAL -->
+<div class="overlay" id="cartModal">
+  <div class="modal" style="max-width:460px;">
+    <button class="close-btn" onclick="closeOverlay('cartModal')">✕</button>
+    <h2>🛒 Keranjang Belanja</h2>
+    <p class="modal-sub" id="cartSub">0 item dipilih</p>
+    <div id="cartBody"></div>
+  </div>
+</div>
+
+<!-- TRACKLIST MODAL -->
+<div class="overlay" id="trackModal">
+  <div class="modal" style="max-width:400px;">
+    <button class="close-btn" onclick="closeOverlay('trackModal')">✕</button>
+    <h2>🎵 Daftar Musik</h2>
+    <p class="modal-sub">Pilih musik latar favoritmu</p>
+    <div class="track-list" id="trackListEl"></div>
+  </div>
+</div>
+
+<button class="wa-float" id="waFloat" title="Chat WhatsApp">
+  <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.122.556 4.112 1.528 5.837L.057 23.5l5.805-1.52A11.943 11.943 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.907 0-3.693-.5-5.24-1.373l-.374-.222-3.896 1.02 1.04-3.797-.244-.39A9.96 9.96 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+</button>
+<button class="cart-fab" id="cartFab" title="Keranjang">🛒<span class="cart-badge" id="cartBadge">0</span></button>
+<button class="fab" id="fab">🔑</button>
+
+<footer>
+  <p>© 2025 <strong id="footerName"></strong> · <a id="footerTg" href="#" target="_blank"></a></p>
+  <p style="margin-top:6px;font-family:'Space Mono',monospace;font-size:.68rem;opacity:.4;">Powered by JSONBin.io</p>
+</footer>
+<div class="toast" id="toast"></div>
+
+<script>
+// ╔══════════════════════════════════════════════════════╗
+// ║  KONFIGURASI TOKO — edit bagian ini saja            ║
+// ╚══════════════════════════════════════════════════════╝
+
+var STORE = {
+  name:            'GARFIELD STORE',
+  tagline:         'Solusi Bot Telegram Terbaik & Terpercaya',
+  telegram:        'https://t.me/bukan_founder',  // link Telegram admin
+  telegramUser:    '@bukan_founder',               // username Telegram
+  telegramChannel: 'https://t.me/elzstore_id',    // link channel
+  waNumber:        '6282114874843',               // nomor WA tanpa +
+  badge:           '⚡ TRUSTED SELLER',
+  currency:        'Rp',
+  adminPassword:   'Malik10_',                  // password admin
+  categories:      ['Semua', 'Bot', 'Tools', 'Payment', 'Hosting'],
+};
+
+var allProducts = [
+  {
+    id: '1', name: 'Userbot', icon: '🤖', category: 'Bot',
+    description: 'Userbot Telegram canggih dengan fitur lengkap. Auto-reply, anti-spam, dan banyak plugin siap pakai.',
+    features: ['Auto Reply', 'Anti Spam', 'Anti Gcast', 'Auto Rep JSON', 'Support Music Bot', 'Multi Plugin', 'Support 24/7'],
+    price: 10000, badge: 'POPULER', badgeColor: '#ff6b35',
+  },
+  {
+    id: '2', name: 'Force Sub Bot', icon: '🔒', category: 'Bot',
+    description: 'Bot wajib subscribe sebelum bisa mengakses grup/channel. Efektif tingkatkan member.',
+    features: ['Multi Channel', 'Custom Pesan', 'Auto Kick', 'Log Admin'],
+    price: 20000, badge: 'HOT', badgeColor: '#e63946',
+  },
+  {
+    id: '3', name: 'Ankes Bot', icon: '📋', category: 'Bot',
+    description: 'Bot ankes & kuesioner otomatis untuk Telegram. Kumpulkan data dengan mudah dan cepat.',
+    features: ['Form Custom', 'Export Data', 'Auto Notif', 'Multi Pertanyaan'],
+    price: 15000, badge: null, badgeColor: null,
+  },
+  {
+    id: '4', name: 'Bot Music', icon: '🎵', category: 'Bot',
+    description: 'Bot pemutar musik berkualitas tinggi untuk grup Telegram. Support YouTube & Spotify.',
+    features: ['YouTube & Spotify', 'Queue System', 'Lyric Support', 'HD Audio'],
+    price: 180000, badge: 'NEW', badgeColor: '#2ec4b6',
+  },
+  {
+    id: '5', name: 'Tagall Partner', icon: '📢', category: 'Tools',
+    description: 'Bot tag semua member grup sekaligus. Cocok untuk pengumuman penting dan promosi.',
+    features: ['Tag Semua Member', 'Cooldown Anti-Ban', 'Custom Pesan', 'Jadwal Kirim'],
+    price: 10000, badge: 'POPULER', badgeColor: '#ff6b35',
+  },
+  {
+    id: '6', name: 'VIP Payment Gateway', icon: '💳', category: 'Payment',
+    description: 'Gateway pembayaran otomatis untuk bisnis digital kamu. Support QRIS, Transfer Bank & e-Wallet, Cashify, Saweria.',
+    features: ['QRIS Otomatis', 'Transfer Bank', 'GoPay & OVO', 'Dashboard Laporan'],
+    price: 50000, badge: 'VIP', badgeColor: '#ffd700',
+  },
+  {
+    id: '7', name: 'Push Member', icon: '🚀', category: 'Tools',
+    description: 'Layanan tambah member Telegram grup/channel secara organik dan aman dari ban.',
+    features: ['Member Real', 'Anti Ban', 'Proses Cepat', 'Garansi Refill'],
+    price: 30000, badge: 'BEST SELLER', badgeColor: '#8338ec',
+  },
+  {
+    id: '8', name: 'VPS', icon: '🖥️', category: 'Hosting',
+    description: 'Virtual Private Server kencang dan stabil untuk hosting bot Telegram kamu 24/7.',
+    features: ['Uptime 99.9%', 'SSD NVMe', 'Bandwidth Unlimited', 'IP Dedicated'],
+    price: 180000, badge: 'STABIL', badgeColor: '#06d6a0',
+  },
+  // ── Template tambah produk baru ──────────────────────
+  // {
+  //   id: '9', name: 'Nama Produk', icon: '🔥', category: 'Bot',
+  //   description: 'Deskripsi produk.',
+  //   features: ['Fitur 1', 'Fitur 2', 'Fitur 3'],
+  //   price: 50000, badge: 'NEW', badgeColor: '#ff6b35',
+  // },
+];
+
+// ╔══════════════════════════════════════════════════════╗
+// ║  JSONBIN (opsional) — kosongkan BIN_ID jika         ║
+// ║  tidak pakai, produk pakai data di atas saja        ║
+// ╚══════════════════════════════════════════════════════╝
+var JSONBIN = {
+  API_KEY: '$2a$10$Cw3J82QoT.3Jf0vOIdI3ru3HzBdqeHslgw2trkTFDfQ.XS4F5WcNO',
+  BIN_ID:  '69a9e418ae596e708f63272f',
+};
+var configured = JSONBIN.API_KEY !== 'GANTI_API_KEY_JSONBIN' && JSONBIN.BIN_ID !== '';
+var BASE_URL = 'https://api.jsonbin.io/v3/b';
+
+// ── Telegram Mini App ──
+if(window.Telegram && window.Telegram.WebApp){ Telegram.WebApp.expand(); Telegram.WebApp.ready(); }
+
+// ── State ──
+var isAdmin=false, activeFilter='Semua', pendingDelId=null, isEditMode=false;
+var cart=[];
+
+// ── Utils ──
+function fmt(n){ return String(n).replace(/\B(?=(\d{3})+(?!\d))/g,'.'); }
+function toast(msg,type){
+  var t=document.getElementById('toast');
+  t.textContent=msg; t.className='toast show'+(type?' '+type:'');
+  clearTimeout(t._t); t._t=setTimeout(function(){t.className='toast';},3500);
+}
+function openOverlay(id){ document.getElementById(id).classList.add('open'); }
+function closeOverlay(id){ document.getElementById(id).classList.remove('open'); }
+function orderLink(p){
+  var msg='🛒 *ORDER PRODUK*\n━━━━━━━━━━━━━━━━\n'+
+    '📦 Produk  : '+p.name+'\n'+'💰 Harga   : '+STORE.currency+' '+fmt(p.price)+'\n'+
+    (p.category?'📂 Kategori: '+p.category+'\n':'')+
+    (p.features&&p.features.length?'✅ Fitur    : '+p.features.join(', ')+'\n':'')+
+    '━━━━━━━━━━━━━━━━\nHalo Admin, saya ingin memesan produk di atas. Mohon konfirmasinya. 🙏';
+  return STORE.telegram+'?text='+encodeURIComponent(msg);
+}
+
+// ── Keranjang ──
+function cartCount(){ return cart.reduce(function(s,x){return s+x.qty;},0); }
+function cartTotal(){ return cart.reduce(function(s,x){return s+x.price*x.qty;},0); }
+function syncCartBadge(){
+  var n=cartCount(),b=document.getElementById('cartBadge');
+  b.textContent=n; n>0?b.classList.add('show'):b.classList.remove('show');
+}
+function addToCart(pid){
+  var p=allProducts.find(function(x){return String(x.id)===String(pid);});
+  if(!p)return;
+  var ex=cart.find(function(x){return String(x.id)===String(pid);});
+  if(ex){ex.qty++;toast('🛒 '+p.name+' +1 ke keranjang','ok');}
+  else{cart.push({id:String(p.id),name:p.name,icon:p.icon||'📦',price:p.price,qty:1});toast('✅ '+p.name+' ditambahkan!','ok');}
+  syncCartBadge(); renderGrid();
+}
+function removeFromCart(pid){
+  cart=cart.filter(function(x){return String(x.id)!==String(pid);});
+  syncCartBadge();renderCartModal();renderGrid();
+}
+function setQty(pid,qty){
+  if(qty<1){removeFromCart(pid);return;}
+  var item=cart.find(function(x){return String(x.id)===String(pid);});
+  if(item){item.qty=qty;syncCartBadge();renderCartModal();}
+}
+function clearCart(){ cart=[];syncCartBadge();renderCartModal();renderGrid();toast('🗑️ Keranjang dikosongkan'); }
+function renderCartModal(){
+  var body=document.getElementById('cartBody'),sub=document.getElementById('cartSub');
+  sub.textContent=cartCount()+' item dipilih · Total: '+STORE.currency+' '+fmt(cartTotal());
+  if(!cart.length){body.innerHTML='<div class="cart-empty"><div class="ce-ico">🛒</div><p>Keranjang kamu masih kosong.<br/>Tambahkan produk dari halaman utama!</p></div>';return;}
+  var rows=cart.map(function(item){
+    return '<div class="cart-item-row">'+
+      '<div class="ci-icon">'+item.icon+'</div>'+
+      '<div class="ci-info"><div class="ci-name">'+item.name+'</div>'+
+      '<div class="ci-price">'+STORE.currency+' '+fmt(item.price)+' × '+item.qty+' = <strong>'+STORE.currency+' '+fmt(item.price*item.qty)+'</strong></div></div>'+
+      '<div class="ci-ctrl">'+
+        '<button class="qty-btn" onclick="setQty(\''+item.id+'\','+(item.qty-1)+')">−</button>'+
+        '<span class="qty-val">'+item.qty+'</span>'+
+        '<button class="qty-btn" onclick="setQty(\''+item.id+'\','+(item.qty+1)+')">+</button>'+
+        '<button class="ci-del" onclick="removeFromCart(\''+item.id+'\')">✕</button>'+
+      '</div></div>';
+  }).join('');
+  body.innerHTML=rows+
+    '<div class="cart-total-box"><span class="cart-total-lbl">TOTAL PEMBAYARAN</span><span class="cart-total-val">'+STORE.currency+' '+fmt(cartTotal())+'</span></div>'+
+    '<button class="checkout-btn" onclick="doCheckout()">'+
+      '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.927 13.01 5.07 12.12c-.652-.204-.664-.652.136-.964l11.17-4.307c.54-.196 1.016.12.518 1.372z"/></svg>'+
+      'Checkout ke Admin Telegram</button>'+
+    '<button class="cart-clear-btn" onclick="clearCart()">🗑️ Kosongkan Keranjang</button>';
+}
+function doCheckout(){
+  if(!cart.length){toast('❌ Keranjang kosong!','err');return;}
+  var now=new Date(),orderId='ORD-'+Date.now().toString().slice(-6);
+  var tgl=now.toLocaleDateString('id-ID',{day:'2-digit',month:'long',year:'numeric'});
+  var jam=now.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+  var baris=['🛒 *PESANAN BARU - '+STORE.name+'*','━━━━━━━━━━━━━━━━━━','🆔 ID: #'+orderId,'🕐 '+tgl+', '+jam,'','*📦 Detail Pesanan:*','──────────────────'];
+  cart.forEach(function(item,i){baris.push((i+1)+'. *'+item.name+'*');baris.push('   '+item.qty+' × '+STORE.currency+' '+fmt(item.price)+' = *'+STORE.currency+' '+fmt(item.price*item.qty)+'*');});
+  baris.push('──────────────────','💰 *TOTAL: '+STORE.currency+' '+fmt(cartTotal())+'*','━━━━━━━━━━━━━━━━━━','','Halo Admin, tolong konfirmasi pesanan saya. 🙏');
+  var url=STORE.telegram+'?text='+encodeURIComponent(baris.join('\n'));
+  try{if(window.Telegram&&Telegram.WebApp&&Telegram.WebApp.openLink)Telegram.WebApp.openLink(url);else window.open(url,'_blank');}catch(e){window.open(url,'_blank');}
+  closeOverlay('cartModal');toast('✅ Pesan dikirim ke admin! 🎉','ok');
+}
+document.getElementById('cartFab').addEventListener('click',function(){renderCartModal();openOverlay('cartModal');});
+document.getElementById('cartModal').addEventListener('click',function(e){if(e.target.id==='cartModal')closeOverlay('cartModal');});
+
+// ── Musik ──
+// 1 radio stream lofi 24/7 — selalu aktif, tidak perlu file MP3
+var TRACKS=[
+  {name:'ElZ Lo-Fi Radio', genre:'Lo-Fi Chill · 24/7 Live', url:'https://cs1.mp3.pm/download/100033008/amdUMFJFdmx0VDEyeHliNU9BRHFub0wybS9lVWJJNUM1d3ZJRk5Cemh6dFFocWlQQ1dvNGo4TUxQSVg1cGw1MzhBNEZ6OXAwdUNITnUxaW5lV0NBSnAyZ21JME9SNTNSOFFocmp2N3MvcG5RQTMvSzZSV2hnQ3c5ak1BU3h2Z1c/Muse_-_Hysteria_-_Muse_-_Hysteria_(mp3.pm).mp3'},
+];
+var mAudio=null,mPlaying=false,mIdx=0,mVol=50,mAutoplay=true;
+function musicInit(){
+  try{var sv=localStorage.getItem('elzs_vol'),si=localStorage.getItem('elzs_trk'),so=localStorage.getItem('elzs_off');
+    if(sv!==null)mVol=parseInt(sv);if(si!==null)mIdx=parseInt(si)%TRACKS.length;if(so==='1')mAutoplay=false;}catch(e){}
+  document.getElementById('volSlider').value=mVol;volStyle();
+  mAudio=new Audio();mAudio.volume=mVol/100;mAudio.preload='none';
+  mAudio.addEventListener('ended',mNext);
+  mAudio.addEventListener('error',function(){console.warn('Track gagal, skip:',TRACKS[mIdx].name);setTimeout(mNext,800);});
+  mAudio.addEventListener('playing',function(){mPlaying=true;mUI();});
+  mAudio.addEventListener('pause',function(){if(!mAudio.ended){mPlaying=false;mUI();}});
+  mAudio.src=TRACKS[mIdx].url;mUI();renderTracklist();
+  if(mAutoplay){var p=mAudio.play();if(p!==undefined)p.then(function(){mPlaying=true;mUI();}).catch(function(){mPlaying=false;mUI();document.addEventListener('click',function fc(){if(!mPlaying&&mAutoplay)mAudio.play().then(function(){mPlaying=true;mUI();}).catch(function(){});document.removeEventListener('click',fc);},{once:true});});}
+}
+function mToggle(){if(!mAudio)return;if(mPlaying){mAudio.pause();mAutoplay=false;try{localStorage.setItem('elzs_off','1');}catch(e){}}else{mAutoplay=true;try{localStorage.setItem('elzs_off','0');}catch(e){}mAudio.play().then(function(){mPlaying=true;mUI();}).catch(function(){});}}
+function mNext(){mIdx=(mIdx+1)%TRACKS.length;mLoad();}
+function mPrev(){mIdx=(mIdx-1+TRACKS.length)%TRACKS.length;mLoad();}
+function mPlayIdx(i){mIdx=i;mAutoplay=true;try{localStorage.setItem('elzs_off','0');}catch(e){}mLoad();closeOverlay('trackModal');}
+function mLoad(){try{localStorage.setItem('elzs_trk',mIdx);}catch(e){}mAudio.src=TRACKS[mIdx].url;mAudio.load();mAudio.play().then(function(){mPlaying=true;mUI();}).catch(function(){mPlaying=false;mUI();});}
+function mSetVol(v){mVol=parseInt(v);if(mAudio)mAudio.volume=mVol/100;try{localStorage.setItem('elzs_vol',mVol);}catch(e){}document.getElementById('volSlider').value=mVol;volStyle();document.getElementById('volIcon').textContent=mVol===0?'🔇':mVol<40?'🔈':mVol<70?'🔉':'🔊';}
+function volStyle(){document.getElementById('volSlider').style.setProperty('--vol',mVol+'%');}
+function mUI(){var t=TRACKS[mIdx];document.getElementById('musicTrackName').textContent='🎵 '+t.name;document.getElementById('musicTrackGenre').textContent=mPlaying?t.genre+' · sedang diputar':'Tap ▶ untuk putar';document.getElementById('playBtn').textContent=mPlaying?'⏸':'▶';var eq=document.getElementById('musicEq');mPlaying?eq.classList.add('playing'):eq.classList.remove('playing');renderTracklist();}
+function renderTracklist(){var el=document.getElementById('trackListEl');if(!el)return;el.innerHTML=TRACKS.map(function(t,i){return '<div class="track-row'+(i===mIdx?' active':'')+'" onclick="mPlayIdx('+i+')"><div class="track-num">'+(i+1)+'</div><div class="track-info"><div class="track-name">'+t.name+'</div><div class="track-genre-label">'+t.genre+'</div></div><div class="track-play-ico">'+(mPlaying&&i===mIdx?'🔊':'▶')+'</div></div>';}).join('');}
+document.getElementById('playBtn').addEventListener('click',mToggle);
+
+
+
+document.getElementById('volSlider').addEventListener('input',function(){mSetVol(this.value);});
+document.getElementById('trackModal').addEventListener('click',function(e){if(e.target.id==='trackModal')closeOverlay('trackModal');});
+
+// ── JSONBin ──
+async function loadProducts(){
+  if(!configured){renderAll();return;}
+  try{
+    var res=await fetch(BASE_URL+'/'+JSONBIN.BIN_ID+'/latest',{headers:{'X-Master-Key':JSONBIN.API_KEY}});
+    if(!res.ok){var e=await res.json();throw new Error(e.message||res.status);}
+    var data=await res.json();
+    if(data.record&&data.record.products&&data.record.products.length)allProducts=data.record.products;
+    renderAll();
+  }catch(e){toast('⚠️ Gagal load JSONBin, pakai data lokal','warn');renderAll();}
+}
+async function saveProducts(){
+  if(!configured)return;
+  var res=await fetch(BASE_URL+'/'+JSONBIN.BIN_ID,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':JSONBIN.API_KEY},body:JSON.stringify({products:allProducts})});
+  if(!res.ok){var e=await res.json();throw new Error(e.message||res.status);}
+}
+
+// ── Render ──
+function renderStats(){
+  var cats={};allProducts.forEach(function(p){cats[p.category]=1;});
+  var minP=allProducts.length?allProducts.reduce(function(m,p){return Math.min(m,p.price);},Infinity):0;
+  document.getElementById('statsBar').innerHTML=
+    '<div class="stat-item"><span class="stat-num">'+allProducts.length+'</span><span class="stat-label">PRODUK</span></div>'+
+    '<div class="stat-item"><span class="stat-num">'+Object.keys(cats).length+'</span><span class="stat-label">KATEGORI</span></div>'+
+    '<div class="stat-item"><span class="stat-num">24/7</span><span class="stat-label">SUPPORT</span></div>'+
+    '<div class="stat-item"><span class="stat-num">'+(minP?STORE.currency+Math.round(minP/1000)+'K':'-')+'</span><span class="stat-label">MULAI DARI</span></div>';
+}
+function renderFilter(){
+  var bar=document.getElementById('filterBar');bar.innerHTML='';
+  STORE.categories.forEach(function(cat){
+    var btn=document.createElement('button');
+    btn.className='filter-btn'+(cat===activeFilter?' active':'');
+    btn.textContent=cat;
+    btn.onclick=function(){activeFilter=cat;renderFilter();renderGrid();};
+    bar.appendChild(btn);
+  });
+}
+function renderGrid(){
+  var grid=document.getElementById('grid');
+  var list=activeFilter==='Semua'?allProducts:allProducts.filter(function(p){return p.category===activeFilter;});
+  grid.innerHTML='';
+  if(!list.length){grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--muted)"><div style="font-size:3rem;margin-bottom:12px">📭</div><p>'+(isAdmin?'Belum ada produk. Klik ➕ untuk tambah!':'Belum ada produk tersedia.')+'</p></div>';}
+  list.forEach(function(p,i){
+    var inCart=cart.some(function(x){return String(x.id)===String(p.id);});
+    var card=document.createElement('div');
+    card.className='card';card.style.animationDelay=(i*0.05)+'s';
+    var featsHtml=(p.features||[]).map(function(f){return '<span class="feature-tag">'+f+'</span>';}).join('');
+    card.innerHTML=
+      (p.badge?'<div class="card-badge" style="background:'+(p.badgeColor||'#7c3aed')+'">'+p.badge+'</div>':'')+
+      '<span class="card-icon">'+(p.icon||'📦')+'</span>'+
+      '<div class="card-category">'+p.category+'</div>'+
+      '<div class="card-name">'+p.name+'</div>'+
+      '<div class="card-desc">'+p.description+'</div>'+
+      '<div class="features-list">'+featsHtml+'</div>'+
+      '<div class="card-footer">'+
+        '<div><div class="price-label">HARGA</div><div class="price-amount"><span>'+STORE.currency+' </span>'+fmt(p.price)+'</div></div>'+
+        '<div class="card-btns">'+
+          '<button class="cart-add-btn'+(inCart?' in-cart':'')+'" data-id="'+p.id+'">'+(inCart?'✅':'🛒')+'</button>'+
+          '<a href="'+orderLink(p)+'" target="_blank" class="order-btn">'+
+            '<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.927 13.01 5.07 12.12c-.652-.204-.664-.652.136-.964l11.17-4.307c.54-.196 1.016.12.518 1.372z"/></svg>Order</a>'+
+        '</div>'+
+      '</div>'+
+      '<div class="admin-actions">'+
+        '<button class="btn-edit" data-id="'+p.id+'">✏️ Edit</button>'+
+        '<button class="btn-del" data-id="'+p.id+'" data-name="'+p.name+'">🗑️ Hapus</button>'+
+      '</div>';
+    grid.appendChild(card);
+  });
+  grid.querySelectorAll('.cart-add-btn').forEach(function(btn){btn.addEventListener('click',function(){addToCart(btn.getAttribute('data-id'));});});
+  var addCard=document.createElement('div');
+  addCard.className='add-card';
+  addCard.innerHTML='<div class="add-icon">➕</div><div class="add-text">Tambah Produk Baru</div><div class="add-sub">Langsung terlihat semua pelanggan</div>';
+  addCard.onclick=function(){openAddModal();};
+  grid.appendChild(addCard);
+  grid.querySelectorAll('.btn-edit').forEach(function(btn){btn.addEventListener('click',function(){openEditModal(btn.getAttribute('data-id'));});});
+  grid.querySelectorAll('.btn-del').forEach(function(btn){btn.addEventListener('click',function(){pendingDelId=btn.getAttribute('data-id');document.getElementById('delSub').innerHTML='Produk <strong style="color:var(--accent2)">'+btn.getAttribute('data-name')+'</strong> akan dihapus permanen.';openOverlay('delModal');});});
+}
+function renderAll(){renderStats();renderFilter();renderGrid();}
+
+// ── Form Produk ──
+function clearForm(){['fId','fName','fIcon','fDesc','fFeats','fBadge','fPrice'].forEach(function(id){document.getElementById(id).value='';});document.getElementById('fColor').value='#7c3aed';document.getElementById('fCat').value='Bot';}
+function openAddModal(){isEditMode=false;clearForm();document.getElementById('prodModalTitle').textContent='➕ Tambah Produk';document.getElementById('prodModalSub').textContent='Produk langsung terlihat semua pelanggan.';document.getElementById('saveProd').textContent='💾 Simpan';openOverlay('prodModal');}
+function openEditModal(id){
+  var p=allProducts.find(function(x){return String(x.id)===String(id);});if(!p)return;
+  isEditMode=true;clearForm();
+  document.getElementById('fId').value=p.id;document.getElementById('fName').value=p.name;document.getElementById('fIcon').value=p.icon||'';document.getElementById('fCat').value=p.category;document.getElementById('fPrice').value=p.price;document.getElementById('fDesc').value=p.description;document.getElementById('fFeats').value=(p.features||[]).join(', ');document.getElementById('fBadge').value=p.badge||'';document.getElementById('fColor').value=p.badgeColor||'#7c3aed';
+  document.getElementById('prodModalTitle').textContent='✏️ Edit: '+p.name;document.getElementById('prodModalSub').textContent='Perubahan langsung terlihat semua pelanggan.';document.getElementById('saveProd').textContent='💾 Simpan Perubahan';openOverlay('prodModal');
+}
+document.getElementById('saveProd').addEventListener('click',async function(){
+  var name=document.getElementById('fName').value.trim(),desc=document.getElementById('fDesc').value.trim();
+  if(!name||!desc){toast('❌ Nama & deskripsi wajib diisi!','err');return;}
+  var btn=document.getElementById('saveProd');btn.disabled=true;btn.textContent='⏳ Menyimpan...';
+  var featsRaw=document.getElementById('fFeats').value.trim(),badge=document.getElementById('fBadge').value.trim()||null;
+  var data={name,icon:document.getElementById('fIcon').value.trim()||'📦',category:document.getElementById('fCat').value,description:desc,features:featsRaw?featsRaw.split(',').map(function(f){return f.trim();}).filter(Boolean):[],price:parseInt(document.getElementById('fPrice').value)||0,badge,badgeColor:badge?document.getElementById('fColor').value:null};
+  if(isEditMode){var eid=document.getElementById('fId').value;allProducts=allProducts.map(function(p){return String(p.id)===String(eid)?Object.assign({},p,data):p;});}
+  else{data.id='p_'+Date.now();allProducts.push(data);}
+  try{await saveProducts();toast('✅ "'+name+'" berhasil '+(isEditMode?'diperbarui':'ditambahkan')+'!','ok');closeOverlay('prodModal');renderAll();}
+  catch(e){toast('❌ Gagal simpan: '+e.message,'err');if(!isEditMode)allProducts.pop();}
+  btn.disabled=false;btn.textContent=isEditMode?'💾 Simpan Perubahan':'💾 Simpan';
+});
+document.getElementById('confirmDel').addEventListener('click',async function(){
+  if(!pendingDelId)return;var btn=document.getElementById('confirmDel');btn.disabled=true;btn.textContent='⏳...';
+  var prev=allProducts.slice();allProducts=allProducts.filter(function(p){return String(p.id)!==String(pendingDelId);});
+  try{await saveProducts();toast('🗑️ Produk berhasil dihapus');pendingDelId=null;closeOverlay('delModal');renderAll();}
+  catch(e){allProducts=prev;toast('❌ Gagal hapus: '+e.message,'err');}
+  btn.disabled=false;btn.textContent='🗑️ Hapus';
+});
+document.getElementById('cancelDel').addEventListener('click',function(){closeOverlay('delModal');});
+document.getElementById('delModal').addEventListener('click',function(e){if(e.target.id==='delModal')closeOverlay('delModal');});
+document.getElementById('closeProdModal').addEventListener('click',function(){closeOverlay('prodModal');});
+document.getElementById('cancelProd').addEventListener('click',function(){closeOverlay('prodModal');});
+document.getElementById('prodModal').addEventListener('click',function(e){if(e.target.id==='prodModal')closeOverlay('prodModal');});
+document.getElementById('loginModal').addEventListener('click',function(e){if(e.target.id==='loginModal')closeOverlay('loginModal');});
+
+// ── Admin ──
+function setAdmin(on){isAdmin=on;document.body.classList.toggle('admin-mode',on);document.getElementById('adminBadge').classList.toggle('show',on);document.getElementById('fab').textContent=on?'➕':'🔑';renderGrid();}
+document.getElementById('fab').addEventListener('click',function(){if(isAdmin)openAddModal();else{openOverlay('loginModal');setTimeout(function(){document.getElementById('pwInput').focus();},150);}});
+function doLogin(){
+  var pw=document.getElementById('pwInput').value;
+  if(pw===STORE.adminPassword){document.getElementById('loginErr').classList.remove('show');document.getElementById('pwInput').value='';closeOverlay('loginModal');setAdmin(true);toast('✅ Selamat datang, Admin!','ok');}
+  else{document.getElementById('loginErr').classList.add('show');document.getElementById('pwInput').value='';document.getElementById('pwInput').focus();}
+}
+document.getElementById('loginBtn').addEventListener('click',doLogin);
+document.getElementById('pwInput').addEventListener('keydown',function(e){if(e.key==='Enter')doLogin();});
+document.getElementById('pwEye').addEventListener('click',function(){var i=document.getElementById('pwInput');i.type=i.type==='password'?'text':'password';});
+document.getElementById('logoutBtn').addEventListener('click',function(){setAdmin(false);toast('👋 Keluar dari mode admin');});
+
+// ── Init ──
+document.getElementById('storeBadge').textContent   = STORE.badge;
+document.getElementById('storeTitle').textContent   = STORE.name;
+document.getElementById('storeTagline').textContent = STORE.tagline;
+document.getElementById('footerName').textContent   = STORE.name;
+document.getElementById('tgBtn').href               = STORE.telegram;
+document.getElementById('footerTg').href            = STORE.telegram;
+document.getElementById('footerTg').textContent     = STORE.telegramUser;
+document.getElementById('waLink').href              = 'https://wa.me/'+STORE.waNumber;
+document.getElementById('channelLink').href         = STORE.telegramChannel;
+document.getElementById('waFloat').onclick          = function(){window.open('https://wa.me/'+STORE.waNumber,'_blank');};
+document.title = STORE.name;
+
+loadProducts();
+musicInit();
+</script>
+</body>
+</html>
